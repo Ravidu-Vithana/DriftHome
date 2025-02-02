@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Drift Home</string>
+    <string name="d_app_or_divider">or</string>
+    <string name="d_signin_text1">Sign In</string>
+    <string name="d_signin_text2">Email</string>
+    <string name="d_signin_edittext1_placeholder">ex: john@gmail.com</string>
+    <string name="d_signin_btn1">Take me Home!</string>
+    <string name="d_signin_btn2">Wait.. I’m new to this!</string>
+    <string name="d_signup_text1">Sign Up</string>
+    <string name="d_signup_text2">Name</string>
+    <string name="d_signup_edittext1_placeholder">ex: John Doe</string>
+    <string name="d_signup_text3">Email</string>
+    <string name="d_signup_edittext2_placeholder">ex: john@gmail.com</string>
+    <string name="d_signup_text4">Mobile</string>
+    <string name="d_signup_edittext3_placeholder">ex: 07XXXXXXXX</string>
+    <string name="d_signup_btn1">Lets Gooo!</string>
+    <string name="d_signup_btn2">Hey... I’m already registered!</string>
+</resources>
