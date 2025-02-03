@@ -1,6 +1,9 @@
 package com.ryvk.drifthome;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,11 +24,14 @@ public class OtpVerificationActivity extends AppCompatActivity {
             return insets;
         });
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.headerContainer, new CommonHeaderFragment())
-//                    .commit();
-//        }
+        Button verifyButton = findViewById(R.id.button2);
+        verifyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(OtpVerificationActivity.this, HomeActivity.class);
+                startActivity(i);
+            }
+        });
 
     }
 }

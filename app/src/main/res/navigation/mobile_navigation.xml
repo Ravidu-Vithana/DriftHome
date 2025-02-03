@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.ryvk.drifthome.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:name="com.ryvk.drifthome.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.ryvk.drifthome.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:name="com.ryvk.drifthome.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>
