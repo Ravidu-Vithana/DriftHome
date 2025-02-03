@@ -1,29 +1,26 @@
 package com.ryvk.drifthome;
 
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.ryvk.drifthome.databinding.ActivityHomeBinding;
+import com.ryvk.drifthome.databinding.ActivityBaseBinding;
 
-public class HomeActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
-    private ActivityHomeBinding binding;
+    private ActivityBaseBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityHomeBinding.inflate(getLayoutInflater());
+        binding = ActivityBaseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);

@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="d_button_corner_radius">10dp</dimen>
     <dimen name="d_common_header_height">70dp</dimen>
+    <dimen name="d_circle_btn_big">220dp</dimen>
+    <dimen name="d_circle_btn_small">180dp</dimen>
 </resources>
