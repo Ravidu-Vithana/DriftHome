@@ -24,8 +24,17 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button button = findViewById(R.id.button5);
+        Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, OtpVerificationActivity.class);
+                startActivity(i);
+            }
+        });
+
+        Button button2 = findViewById(R.id.button5);
+        button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, SignUpActivity.class);
