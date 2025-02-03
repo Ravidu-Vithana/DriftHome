@@ -26,6 +26,7 @@
         android:id="@+id/button9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/d_common_header_height"
         android:width="220dp"
         android:height="220dp"
         android:backgroundTint="@color/d_blue"
