@@ -39,7 +39,7 @@
         android:layout_marginEnd="8dp"
         android:backgroundTint="@color/d_blue"
         android:text="@string/d_header_btn"
-        app:cornerRadius="10dp"
+        app:cornerRadius="@dimen/d_button_corner_radius"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

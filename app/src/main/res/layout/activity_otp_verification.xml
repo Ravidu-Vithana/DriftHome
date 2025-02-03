@@ -86,7 +86,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_otpVerification_btn1"
                 android:textStyle="bold"
-                app:cornerRadius="10dp"
+                app:cornerRadius="@dimen/d_button_corner_radius"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"

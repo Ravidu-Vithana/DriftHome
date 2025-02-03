@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">Drift Home</string>
     <string name="d_app_or_divider">or</string>
+
     <string name="d_signin_text1">Sign In</string>
     <string name="d_signin_text2">Email</string>
     <string name="d_signin_edittext1_placeholder">ex: john@gmail.com</string>
     <string name="d_signin_btn1">Take me Home!</string>
     <string name="d_signin_btn2">Wait.. I’m new to this!</string>
+
     <string name="d_signup_text1">Sign Up</string>
     <string name="d_signup_text2">Name</string>
     <string name="d_signup_edittext1_placeholder">ex: John Doe</string>
@@ -15,12 +17,22 @@
     <string name="d_signup_edittext3_placeholder">ex: 07XXXXXXXX</string>
     <string name="d_signup_btn1">Lets Gooo!</string>
     <string name="d_signup_btn2">Hey... I’m already registered!</string>
+
     <string name="d_otpVerification_verifyEmail">Verify the email</string>
     <string name="d_otpVerification_verifyLogin">Login Verification</string>
     <string name="d_otpVerification_text1">Enter the verification code sent to your email.</string>
     <string name="d_otpVerification_btn1">Verify</string>
     <string name="d_otpVerification_btn2">Resend Code</string>
     <string name="d_otpVerification_edittext1_placeholder">******</string>
+
+    <string name="d_homeFragment_btn1_bookride">Book Ride</string>
+    <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
+    <string name="d_homeFragment_btn1_listening">listening...</string>
+    <string name="d_homeFragment_btn1_noDropLocations">Add Drop locations</string>
+    <string name="d_homeFragment_text1_bookride">Or say “Hey Buddy” to get started</string>
+    <string name="d_homeFragment_text1_insufficientCredit">Please top up the account to continue the service</string>
+    <string name="d_homeFragment_text1_listening">say “Book Ride” to book your ride</string>
+    <string name="d_homeFragment_text1_noDropLocations">Please add one or more drop locations to activate the service.</string>
 
     <string name="d_header_btn">History</string>
     <string name="title_activity_home">HomeActivity</string>
