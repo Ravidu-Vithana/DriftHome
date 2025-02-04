@@ -104,10 +104,10 @@ public class BookingActivity extends AppCompatActivity {
                         float bookRideBtnAnimate = getResources().getDimension(R.dimen.d_bookRideBtn_animate);
                         ObjectAnimator animator = ObjectAnimator.ofFloat(bookBtn, "y", bookRideBtnAnimate);
                         animator.setDuration(500);
-                        animator.start();
 
                         float bookRideBtnHeight = getResources().getDimension(R.dimen.d_circle_btn_small);
-                        ObjectAnimator animator2 = ObjectAnimator.ofFloat(infoText, "y", bookRideBtnAnimate + bookRideBtnHeight + 50f);
+                        float bookRideTextY = bookRideBtnAnimate + bookRideBtnHeight + 50f;
+                        ObjectAnimator animator2 = ObjectAnimator.ofFloat(infoText, "y", bookRideTextY);
                         animator2.setDuration(500);
                         animator2.addListener(new AnimatorListenerAdapter() {
                             @Override
@@ -116,8 +116,14 @@ public class BookingActivity extends AppCompatActivity {
                                 driverCardView.setVisibility(View.VISIBLE);
                             }
                         });
-                        animator2.start();
 
+                        float bookRideDriverCardAnimate = getResources().getDimension(R.dimen.d_bookRideDriverCard_animate);
+                        ObjectAnimator animator3 = ObjectAnimator.ofFloat(driverCardView, "y", bookRideTextY+bookRideDriverCardAnimate);
+                        animator3.setDuration(100);
+
+                        animator3.start();
+                        animator.start();
+                        animator2.start();
 
                     }
                 });
