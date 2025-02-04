@@ -17,6 +17,7 @@
             android:fromDegrees="270"
             android:pivotX="50%"
             android:pivotY="50%">
+            android:frameDuration="20"
             <shape android:shape="ring"
                 android:innerRadiusRatio="3"
                 android:thicknessRatio="10"
