@@ -1,5 +1,7 @@
 package com.ryvk.drifthome;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentContainerView;
 
 public class BookingActivity extends AppCompatActivity {
 
@@ -47,6 +50,7 @@ public class BookingActivity extends AppCompatActivity {
         Button cancelBtn = findViewById(R.id.button11);
         TextView infoText = findViewById(R.id.textView14);
         ProgressBar progressBar = findViewById(R.id.progressBar4);
+        FragmentContainerView driverCardView = findViewById(R.id.fragmentContainerView2);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -105,7 +109,15 @@ public class BookingActivity extends AppCompatActivity {
                         float bookRideBtnHeight = getResources().getDimension(R.dimen.d_circle_btn_small);
                         ObjectAnimator animator2 = ObjectAnimator.ofFloat(infoText, "y", bookRideBtnAnimate + bookRideBtnHeight + 50f);
                         animator2.setDuration(500);
+                        animator2.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                driverCardView.setVisibility(View.VISIBLE);
+                            }
+                        });
                         animator2.start();
+
 
                     }
                 });

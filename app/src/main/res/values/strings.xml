@@ -40,6 +40,10 @@
     <string name="d_homeFragment_text1_listening">say “Book Ride” to book your ride</string>
     <string name="d_homeFragment_text1_noDropLocations">Please add one or more drop locations to activate the service.</string>
 
+    <string name="d_driverCardFragment_text1">Name:</string>
+    <string name="d_driverCardFragment_text2">Vehicle:</string>
+    <string name="d_driverCardFragment_text3n4_placeholder">_________________________</string>
+
     <string name="d_header_btn">History</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_home">Home</string>
