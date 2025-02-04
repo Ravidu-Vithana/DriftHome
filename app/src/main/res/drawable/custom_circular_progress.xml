@@ -3,12 +3,17 @@
 
     <!-- Background Track (Unfilled part) -->
     <item>
-        <shape android:shape="ring"
-            android:innerRadiusRatio="3"
-            android:thicknessRatio="10"
-            android:useLevel="false">
-            <solid android:color="@android:color/transparent"/>  <!-- Background color -->
-        </shape>
+        <rotate
+            android:fromDegrees="270"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="ring"
+                android:innerRadiusRatio="3"
+                android:thicknessRatio="10"
+                android:useLevel="false">
+                <solid android:color="@android:color/transparent"/>  <!-- Background color -->
+            </shape>
+        </rotate>
     </item>
 
     <!-- Progress (Filled part) -->
@@ -17,7 +22,6 @@
             android:fromDegrees="270"
             android:pivotX="50%"
             android:pivotY="50%">
-            android:frameDuration="20"
             <shape android:shape="ring"
                 android:innerRadiusRatio="3"
                 android:thicknessRatio="10"

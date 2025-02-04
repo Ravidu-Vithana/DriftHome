@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -45,14 +46,16 @@ public class BookingActivity extends AppCompatActivity {
         Button bookBtn = findViewById(R.id.button10);
         Button cancelBtn = findViewById(R.id.button11);
         TextView infoText = findViewById(R.id.textView14);
+        ProgressBar progressBar = findViewById(R.id.progressBar4);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                progressBar.setVisibility(View.GONE);
                 infoText.setVisibility(View.VISIBLE);
+                cancelBtn.setVisibility(View.GONE);
                 bookBtn.setText("");
                 bookBtn.setTextSize(60f);
-                cancelBtn.setVisibility(View.GONE);
             }
         });
 
