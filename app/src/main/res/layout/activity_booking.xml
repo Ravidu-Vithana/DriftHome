@@ -16,6 +16,7 @@
         android:text="@string/d_booking_text1"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/button10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -29,10 +30,11 @@
         android:width="@dimen/d_circle_btn_big"
         android:height="@dimen/d_circle_btn_big"
         android:backgroundTint="@color/d_blue"
+        android:clickable="false"
         android:fontFamily="@font/lexend_deca"
         android:shadowDy="5"
-        android:text="3"
-        android:textSize="60sp"
+        android:text="@string/d_booking_btn1"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,5 +59,39 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/d_red1"
+        android:fontFamily="@font/lexend_deca"
+        android:paddingLeft="50dp"
+        android:paddingTop="15dp"
+        android:paddingRight="50dp"
+        android:paddingBottom="15dp"
+        android:text="@string/d_booking_btn1_cancel"
+        android:textSize="20sp"
+        app:cornerRadius="@dimen/d_button_corner_radius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer" />
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
+        android:layout_width="@dimen/d_circle_btn_big"
+        android:layout_height="@dimen/d_circle_btn_big"
+        android:indeterminateDrawable="@drawable/custom_circular_progress"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/d_lightBlue"
+        app:layout_constraintBottom_toBottomOf="@+id/button10"
+        app:layout_constraintEnd_toEndOf="@+id/button10"
+        app:layout_constraintStart_toStartOf="@+id/button10"
+        app:layout_constraintTop_toTopOf="@+id/button10"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
