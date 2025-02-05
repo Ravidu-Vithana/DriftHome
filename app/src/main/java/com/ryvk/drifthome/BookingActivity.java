@@ -20,6 +20,12 @@ import androidx.fragment.app.FragmentContainerView;
 
 public class BookingActivity extends AppCompatActivity {
 
+    float bookRideBtnAnimate;
+    float bookRideBtnHeight;
+    float bookRideTextY;
+    float bookRideDriverCardAnimate;
+    float bookRideAddressTextAnimate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +46,12 @@ public class BookingActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
                 initiateBooking();
+//                try {
+//                    Thread.sleep(5000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                startTrip();
             }
         }).start();
 
@@ -101,12 +113,12 @@ public class BookingActivity extends AppCompatActivity {
                         bookBtn.setText(R.string.d_booking_btn1_cancel);
                         bookBtn.setTextSize(20f);
 
-                        float bookRideBtnAnimate = getResources().getDimension(R.dimen.d_bookRideBtn_animate);
+                        bookRideBtnAnimate = getResources().getDimension(R.dimen.d_bookRideBtn_animate);
                         ObjectAnimator animator = ObjectAnimator.ofFloat(bookBtn, "y", bookRideBtnAnimate);
                         animator.setDuration(500);
 
-                        float bookRideBtnHeight = getResources().getDimension(R.dimen.d_circle_btn_small);
-                        float bookRideTextY = bookRideBtnAnimate + bookRideBtnHeight + 50f;
+                        bookRideBtnHeight = getResources().getDimension(R.dimen.d_circle_btn_small);
+                        bookRideTextY = bookRideBtnAnimate + bookRideBtnHeight + 50f;
                         ObjectAnimator animator2 = ObjectAnimator.ofFloat(infoText, "y", bookRideTextY);
                         animator2.setDuration(500);
                         animator2.addListener(new AnimatorListenerAdapter() {
@@ -117,7 +129,7 @@ public class BookingActivity extends AppCompatActivity {
                             }
                         });
 
-                        float bookRideDriverCardAnimate = getResources().getDimension(R.dimen.d_bookRideDriverCard_animate);
+                        bookRideDriverCardAnimate = getResources().getDimension(R.dimen.d_bookRideDriverCard_animate);
                         ObjectAnimator animator3 = ObjectAnimator.ofFloat(driverCardView, "y", bookRideTextY+bookRideDriverCardAnimate);
                         animator3.setDuration(100);
 
@@ -132,7 +144,22 @@ public class BookingActivity extends AppCompatActivity {
     }
 
     private void startTrip(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView addressText = findViewById(R.id.textView4);
+                bookRideAddressTextAnimate = getResources().getDimension(R.dimen.d_bookRideAddressText_animate);
+                ObjectAnimator animator3 = ObjectAnimator.ofFloat(addressText, "y", bookRideTextY+bookRideAddressTextAnimate);
+                animator3.setDuration(100);
 
+                Button bookBtn = findViewById(R.id.button10);
+                bookBtn.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                bookBtn.requestLayout();
+
+                int purpleColor = ContextCompat.getColor(getApplicationContext(), R.color.d_purple);
+                bookBtn.setBackgroundColor(purpleColor);
+            }
+        });
     }
 
 }

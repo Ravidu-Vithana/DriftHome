@@ -26,6 +26,7 @@
     <string name="d_otpVerification_edittext1_placeholder">******</string>
 
     <string name="d_booking_text1">Booking in....</string>
+    <string name="d_booking_text2">Drop location not assigned still.</string>
     <string name="d_booking_btn1">Searching....</string>
     <string name="d_booking_btn1_cancel">Cancel</string>
     <string name="d_booking_text1_driverOnTheWay">Driver on the way...</string>
