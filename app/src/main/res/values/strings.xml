@@ -48,6 +48,19 @@
     <string name="d_homeFragment_text1_listening">say “Book Ride” to book your ride</string>
     <string name="d_homeFragment_text1_noDropLocations">Please add one or more drop locations to activate the service.</string>
 
+    <string name="d_settingsFragment_text1">Settings</string>
+    <string name="d_settingsFragment_btn1">My Credit Card</string>
+    <string name="d_settingsFragment_setting1">Inquire Additional Charges</string>
+    <string name="d_settingsFragment_setting1_body">If this setting is “on”, system will automatically inquire additional trip charges from the card. This will also allow to go to destinations beyond the maximum top-up charge.</string>
+    <string name="d_settingsFragment_setting2">Shake to Book Ride</string>
+    <string name="d_settingsFragment_setting2_body">If this setting is “on”, a ride can be booked from Home menu just by shaking the phone. (Note: only for supported devices)</string>
+    <string name="d_settingsFragment_setting3">Auto close the App</string>
+    <string name="d_settingsFragment_setting3_body">If this setting is “on”, the application will automatically close with a timeout after the trip has ended.</string>
+    <string name="d_settingsFragment_setting4">Voice Notifications</string>
+    <string name="d_settingsFragment_setting4_body">If this setting is “on”, the application will send out voice notifications regarding the ride status.</string>
+    <string name="d_settingsFragment_setting5">Always Home if in range</string>
+    <string name="d_settingsFragment_setting5_body">If this setting is “on”, the drop location will default to home if home is within range. If not, it will default to the nearest address.</string>
+
     <string name="d_driverCardFragment_text1">Name:</string>
     <string name="d_driverCardFragment_text2">Vehicle:</string>
     <string name="d_driverCardFragment_text3n4_placeholder">_________________________</string>
