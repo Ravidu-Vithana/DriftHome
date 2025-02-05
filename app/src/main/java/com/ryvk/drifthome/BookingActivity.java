@@ -54,7 +54,6 @@ public class BookingActivity extends AppCompatActivity {
         bookingThread.start();
 
     }
-
     private void initiateBooking(){
         Button bookBtn = findViewById(R.id.button10);
         Button cancelBtn = findViewById(R.id.button11);
@@ -131,6 +130,12 @@ public class BookingActivity extends AppCompatActivity {
                                 super.onAnimationEnd(animation);
                                 driverCardView.setVisibility(View.VISIBLE);
                                 bookBtn.setClickable(true);
+                                try {
+                                    Thread.sleep(3000);
+                                    startTrip();
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         });
 
@@ -146,7 +151,6 @@ public class BookingActivity extends AppCompatActivity {
             }
         }).start();
     }
-
     private void startTrip(){
         runOnUiThread(new Runnable() {
             @Override
@@ -156,5 +160,4 @@ public class BookingActivity extends AppCompatActivity {
             }
         });
     }
-
 }

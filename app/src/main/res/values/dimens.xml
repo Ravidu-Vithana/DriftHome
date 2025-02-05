@@ -7,7 +7,7 @@
     <dimen name="d_bookRideBtn_animate">100dp</dimen>
     <dimen name="d_bookRideAddressText_animate">20dp</dimen>
     <dimen name="d_bookRideDriverCard_animate">40dp</dimen>
-    <dimen name="d_bookRideDriverCard_height">80dp</dimen>
+    <dimen name="d_bookRideDriverCard_height">100dp</dimen>
     <dimen name="d_circle_btn_big">220dp</dimen>
     <dimen name="d_circle_btn_small">180dp</dimen>
     <dimen name="d_rideStatusBtn_height">80dp</dimen>
