@@ -2,7 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="edittext_placeholder">#8D8D8D</color>
     <color name="d_red1">#F94D68</color>
     <color name="d_offwhite">#FFF1F4</color>
     <color name="d_blue">#5664F5</color>
@@ -10,4 +9,5 @@
     <color name="d_lightBlue2">#EBF4FF</color>
     <color name="d_green">#2FCD54</color>
     <color name="d_gray">#EBEBEB</color>
+    <color name="d_gray2">#8D8D8D</color>
 </resources>

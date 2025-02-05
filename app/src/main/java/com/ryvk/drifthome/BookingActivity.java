@@ -131,4 +131,8 @@ public class BookingActivity extends AppCompatActivity {
         }).start();
     }
 
+    private void startTrip(){
+
+    }
+
 }
