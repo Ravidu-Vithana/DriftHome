@@ -3,6 +3,7 @@ package com.ryvk.drifthome;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class BookingActivity extends AppCompatActivity {
             return insets;
         });
 
-        new Thread(new Runnable() {
+        Thread bookingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -46,14 +47,9 @@ public class BookingActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
                 initiateBooking();
-//                try {
-//                    Thread.sleep(5000);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                startTrip();
             }
-        }).start();
+        });
+        bookingThread.start();
 
     }
 
@@ -147,17 +143,7 @@ public class BookingActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                TextView addressText = findViewById(R.id.textView4);
-                bookRideAddressTextAnimate = getResources().getDimension(R.dimen.d_bookRideAddressText_animate);
-                ObjectAnimator animator3 = ObjectAnimator.ofFloat(addressText, "y", bookRideTextY+bookRideAddressTextAnimate);
-                animator3.setDuration(100);
-
-                Button bookBtn = findViewById(R.id.button10);
-                bookBtn.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                bookBtn.requestLayout();
-
-                int purpleColor = ContextCompat.getColor(getApplicationContext(), R.color.d_purple);
-                bookBtn.setBackgroundColor(purpleColor);
+//                Intent i = new Intent(BookingActivity.this,)
             }
         });
     }
