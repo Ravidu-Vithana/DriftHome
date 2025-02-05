@@ -32,6 +32,13 @@
     <string name="d_booking_text1_driverOnTheWay">Driver on the way...</string>
     <string name="d_booking_text1_driverArrived">Driver arrived</string>
 
+    <string name="d_trip_btn1_tripStarted">Trip Started!</string>
+    <string name="d_trip_btn1_tripEnded">Trip Ended!</string>
+    <string name="d_trip_text1_destination">Destination</string>
+    <string name="d_trip_text1_arrivedAt">Arrived At</string>
+    <string name="d_trip_text2">Drop location not assigned still.</string>
+    <string name="d_trip_text3">Your soul has been saved!</string>
+
     <string name="d_homeFragment_btn1_bookride">Book Ride</string>
     <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
     <string name="d_homeFragment_btn1_listening">listening...</string>

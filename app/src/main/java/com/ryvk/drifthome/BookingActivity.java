@@ -143,7 +143,8 @@ public class BookingActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-//                Intent i = new Intent(BookingActivity.this,)
+                Intent i = new Intent(BookingActivity.this, TripActivity.class);
+                startActivity(i);
             }
         });
     }

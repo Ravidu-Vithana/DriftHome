@@ -105,22 +105,4 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="invisible" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/lexend_deca"
-        android:text="@string/d_booking_text2"
-        android:textAlignment="center"
-        android:textColor="@color/d_gray2"
-        android:textSize="14sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="invisible" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
