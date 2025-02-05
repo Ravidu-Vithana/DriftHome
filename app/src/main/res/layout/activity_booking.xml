@@ -95,7 +95,7 @@
         android:id="@+id/fragmentContainerView2"
         android:name="com.ryvk.drifthome.DriverCard"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/d_bookRideDriverCard_height"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:visibility="invisible"

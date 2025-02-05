@@ -2,7 +2,9 @@ package com.ryvk.drifthome;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -91,23 +93,29 @@ public class BookingActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        infoText.setVisibility(View.INVISIBLE);
                         infoText.setText(R.string.d_booking_text1_driverOnTheWay);
 
-                        // Get new size and color values
-                        int newSize = (int) getResources().getDimension(R.dimen.d_circle_btn_small);
-                        int newColor = ContextCompat.getColor(getApplicationContext(), R.color.d_red1);
-
-                        // Update button height and width
-                        ViewGroup.LayoutParams params = bookBtn.getLayoutParams();
-                        params.width = newSize;
-                        params.height = newSize;
-                        bookBtn.setLayoutParams(params);
-
                         // Change button background color
+                        int newColor = ContextCompat.getColor(getApplicationContext(), R.color.d_red1);
                         bookBtn.setBackgroundColor(newColor);
                         bookBtn.setText(R.string.d_booking_btn1_cancel);
                         bookBtn.setTextSize(20f);
+
+                        // Get new size from dimens.xml
+                        int newSize = (int) getResources().getDimension(R.dimen.d_circle_btn_small);
+                        int currentWidth = bookBtn.getWidth();
+
+                        // Animate width and height
+                        ValueAnimator sizeAnimator = ValueAnimator.ofInt(currentWidth, newSize);
+                        sizeAnimator.setDuration(300);
+                        sizeAnimator.addUpdateListener(animation -> {
+                            int animatedValue = (int) animation.getAnimatedValue();
+                            ViewGroup.LayoutParams params = bookBtn.getLayoutParams();
+                            params.width = animatedValue;
+                            params.height = animatedValue;
+                            bookBtn.setLayoutParams(params);
+                        });
+                        sizeAnimator.start();
 
                         bookRideBtnAnimate = getResources().getDimension(R.dimen.d_bookRideBtn_animate);
                         ObjectAnimator animator = ObjectAnimator.ofFloat(bookBtn, "y", bookRideBtnAnimate);
@@ -122,6 +130,7 @@ public class BookingActivity extends AppCompatActivity {
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
                                 driverCardView.setVisibility(View.VISIBLE);
+                                bookBtn.setClickable(true);
                             }
                         });
 
@@ -129,10 +138,9 @@ public class BookingActivity extends AppCompatActivity {
                         ObjectAnimator animator3 = ObjectAnimator.ofFloat(driverCardView, "y", bookRideTextY+bookRideDriverCardAnimate);
                         animator3.setDuration(100);
 
-                        animator3.start();
-                        animator.start();
-                        animator2.start();
-
+                        AnimatorSet animatorSet = new AnimatorSet();
+                        animatorSet.playTogether(animator, animator2, animator3);
+                        animatorSet.start();
                     }
                 });
             }
