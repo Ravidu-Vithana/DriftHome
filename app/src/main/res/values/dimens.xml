@@ -12,4 +12,6 @@
     <dimen name="d_circle_btn_small">180dp</dimen>
     <dimen name="d_rideStatusBtn_height">80dp</dimen>
     <dimen name="d_setting_switch_height">50dp</dimen>
+    <dimen name="d_creditCard_height">200dp</dimen>
+    <dimen name="d_creditCard_width">350dp</dimen>
 </resources>

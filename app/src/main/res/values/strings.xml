@@ -62,6 +62,20 @@
     <string name="d_settingsFragment_setting5">Always Home if in range</string>
     <string name="d_settingsFragment_setting5_body">If this setting is “on”, the drop location will default to home if home is within range. If not, it will default to the nearest address.</string>
 
+    <string name="d_creditCard_text1">My Credit Card</string>
+
+    <string name="d_addCreditCardFragment_text2">Card Number</string>
+    <string name="d_addCreditCardFragment_text3">Expiry Date</string>
+    <string name="d_addCreditCardFragment_text4">Cvv</string>
+    <string name="d_addCreditCardFragment_text5_placeholder">#### #### #### ####</string>
+    <string name="d_addCreditCardFragment_text6_placeholder">MM/YY</string>
+    <string name="d_addCreditCardFragment_text7_placeholder">###</string>
+    <string name="d_addCreditCardFragment_btn">Add Card</string>
+
+    <string name="d_viewCreditCardFragment_text1">4217 #### #### ####</string>
+    <string name="d_viewCreditCardFragment_text2">12/28</string>
+    <string name="d_viewCreditCardFragment_btn">Remove Card</string>
+
     <string name="d_driverCardFragment_text1">Name:</string>
     <string name="d_driverCardFragment_text2">Vehicle:</string>
     <string name="d_driverCardFragment_text3n4_placeholder">_________________________</string>
