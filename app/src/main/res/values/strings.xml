@@ -50,6 +50,7 @@
 
     <string name="d_settingsFragment_text1">Settings</string>
     <string name="d_settingsFragment_btn1">My Credit Card</string>
+    <string name="d_settingsFragment_btn2">Logout</string>
     <string name="d_settingsFragment_setting1">Inquire Additional Charges</string>
     <string name="d_settingsFragment_setting1_body">If this setting is “on”, system will automatically inquire additional trip charges from the card. This will also allow to go to destinations beyond the maximum top-up charge.</string>
     <string name="d_settingsFragment_setting2">Shake to Book Ride</string>
