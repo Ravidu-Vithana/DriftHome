@@ -28,8 +28,8 @@ public class OtpVerificationActivity extends AppCompatActivity {
         verifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(OtpVerificationActivity.this, BaseActivity.class);
-                startActivity(i);
+//                Intent i = new Intent(OtpVerificationActivity.this, BaseActivity.class);
+//                startActivity(i);
             }
         });
 

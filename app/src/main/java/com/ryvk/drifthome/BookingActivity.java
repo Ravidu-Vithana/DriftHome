@@ -128,8 +128,13 @@ public class BookingActivity extends AppCompatActivity {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
-                                driverCardView.setVisibility(View.VISIBLE);
-                                bookBtn.setClickable(true);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        driverCardView.setVisibility(View.VISIBLE);
+                                        bookBtn.setClickable(true);
+                                    }
+                                });
                                 try {
                                     Thread.sleep(3000);
                                     startTrip();
