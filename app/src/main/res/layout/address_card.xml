@@ -16,6 +16,7 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+        android:padding="20dp"
         app:cornerRadius="0dp"
         app:icon="@drawable/map"
         app:iconTint="@color/white"
@@ -33,6 +34,7 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+        android:padding="20dp"
         app:cornerRadius="0dp"
         app:icon="@drawable/delete"
         app:iconTint="@color/white"
@@ -40,20 +42,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextTextMultiLine"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/textView43"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
+        android:fontFamily="@font/lexend_deca"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:text="@string/d_addressCard_text1"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button23"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
