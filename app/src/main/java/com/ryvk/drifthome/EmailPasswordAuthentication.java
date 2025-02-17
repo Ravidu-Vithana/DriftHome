@@ -15,13 +15,20 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 import okhttp3.OkHttpClient;
 
@@ -81,10 +88,24 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             storeDetails(user);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(EmailPasswordAuthentication.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Exception exception = task.getException();
+                            String errorMessage;
+
+                            if (exception instanceof FirebaseAuthUserCollisionException) {
+                                errorMessage = "The email address is already in use by another account.";
+                            } else if (exception instanceof FirebaseAuthInvalidUserException) {
+                                errorMessage = "No account found with this email.";
+                            } else {
+                                errorMessage = "Authentication failed. Please try again later.";
+                            }
+
+                            Log.w(TAG, "createAccountWithEmail: failure", exception);
+
+                            // Send error message back to MainActivity
+                            Intent intent = new Intent();
+                            intent.putExtra("AUTH_ERROR", errorMessage);
+                            setResult(RESULT_CANCELED, intent);
+                            finish();
                         }
                     }
                 });
@@ -148,26 +169,33 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
 
     private void storeDetails(FirebaseUser loggedUser) {
         if(loggedUser != null){
-            loggedUser.getIdToken(true)
-                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            HashMap<String, Object> drinker = new HashMap<>();
+            drinker.put("name", name);
+            drinker.put("email", email);
+            drinker.put("mobile", mobile);
+            drinker.put("trip_count", 0);
+
+            db.collection("drinker")
+                    .add(drinker)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
-                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-
-                            if(task.isSuccessful()){
-                                String firebaseToken = task.getResult().getToken();
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        OkHttpClient okHttpClient = new OkHttpClient();
-
-                                    }
-                                }).start();
-
-                            }else{
-                                Toast.makeText(EmailPasswordAuthentication.this,"Failed to retrieve the Client Token",Toast.LENGTH_LONG).show();
-                            }
-
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.i(TAG, "store details: success");
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "store details: failure");
+                            Intent intent = new Intent();
+                            intent.putExtra("AUTH_ERROR", "Data update failed!");
+                            setResult(RESULT_CANCELED, intent);
+                            finish();
                         }
                     });
 

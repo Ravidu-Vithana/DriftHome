@@ -57,6 +57,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
 
+    // Add the dependency for the Firebase Firestore
+    implementation("com.google.firebase:firebase-firestore")
+
     // Add OKHttp client
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 

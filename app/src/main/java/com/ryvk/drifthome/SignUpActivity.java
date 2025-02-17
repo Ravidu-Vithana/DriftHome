@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -19,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
+    private static final int RC_EPSIGNUP = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
                 i.putExtra("mobile",mobile);
                 i.putExtra("password",password);
                 i.putExtra("state",EmailPasswordAuthentication.SIGNUPSTATE);
-                startActivity(i);
+                startActivityForResult(i,RC_EPSIGNUP);
             }
         });
 
@@ -78,6 +80,22 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RC_EPSIGNUP){
+            if (resultCode == RESULT_CANCELED && data != null) {
+                String errorMessage = data.getStringExtra("AUTH_ERROR");
+                if (errorMessage != null) {
+                    AlertUtils.showAlert(this,"Account Creation Failed!",errorMessage); // Display the error in an alert dialog
+                }
+            }
+            if(resultCode == RESULT_OK){
+                checkCurrentUser();
+            }
+        }
     }
 
     @Override
