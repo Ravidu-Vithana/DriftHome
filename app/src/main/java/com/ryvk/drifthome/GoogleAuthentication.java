@@ -56,6 +56,17 @@ public class GoogleAuthentication extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        if(InternetChecker.checkInternet(GoogleAuthentication.this)){
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.web_server_client_id))
+                    .requestEmail()
+                    .build();
+
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            mAuth = FirebaseAuth.getInstance();
+            signIn();
+        }
     }
 
     public void onStart() {
