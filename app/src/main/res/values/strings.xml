@@ -16,6 +16,8 @@
     <string name="d_signup_edittext2_placeholder">ex: john@gmail.com</string>
     <string name="d_signup_text4">Mobile</string>
     <string name="d_signup_edittext3_placeholder">ex: 07XXXXXXXX</string>
+    <string name="d_signup_text5">Password</string>
+    <string name="d_signup_edittext4_placeholder">Use a strong password</string>
     <string name="d_signup_btn1">Lets Gooo!</string>
     <string name="d_signup_btn2">Hey... I’m already registered!</string>
 

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "769783667407",
+    "project_id": "drift-home-450008",
+    "storage_bucket": "drift-home-450008.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769783667407:android:7e0abef8c09724d7eeb5ba",
+        "android_client_info": {
+          "package_name": "com.ryvk.drifthome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769783667407-a9vcu2nl4cala9sff735pb0v02ngj7kt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ryvk.drifthome",
+            "certificate_hash": "bd9df3aaebb318c1f4c8bda150323f4147e81f92"
+          }
+        },
+        {
+          "client_id": "769783667407-4jtuedlc1edvu61tgcbq2ppdom1sv88c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWKzAPcOMRClCodjuk1VkNZsv4xV_1wio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769783667407-4jtuedlc1edvu61tgcbq2ppdom1sv88c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
