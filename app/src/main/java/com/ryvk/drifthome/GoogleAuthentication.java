@@ -39,7 +39,7 @@ import okhttp3.Response;
 
 public class GoogleAuthentication extends AppCompatActivity {
 
-    private static final String TAG = "GoogleActivity";
+    private static final String TAG = "GoogleAuthentication";
     private static final int RC_SIGN_IN = 9001;
 
     private FirebaseAuth mAuth;
@@ -124,7 +124,6 @@ public class GoogleAuthentication extends AppCompatActivity {
     private void updateUI(FirebaseUser loggedUser) {
 
         if(loggedUser != null){
-
             loggedUser.getIdToken(true)
                     .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                         @Override
@@ -138,7 +137,7 @@ public class GoogleAuthentication extends AppCompatActivity {
                                     public void run() {
                                         OkHttpClient okHttpClient = new OkHttpClient();
 
-
+                                        finish();
                                     }
                                 }).start();
 
@@ -150,7 +149,5 @@ public class GoogleAuthentication extends AppCompatActivity {
                     });
 
         }
-
     }
-
 }
