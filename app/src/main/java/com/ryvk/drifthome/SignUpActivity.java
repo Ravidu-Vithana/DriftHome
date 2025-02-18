@@ -38,7 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(SignUpActivity.this,GoogleAuthentication.class);
-                startActivity(i);
+                startActivityForResult(i,RC_EPSIGNUP);
             }
         });
 

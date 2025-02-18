@@ -26,7 +26,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
@@ -78,6 +81,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
 
     private void createAccount(String email, String password) {
         // [START create_user_with_email]
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -86,7 +90,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            storeDetails(user);
+                            checkUserInDB(user);
                         } else {
                             Exception exception = task.getException();
                             String errorMessage;
@@ -101,7 +105,6 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
 
                             Log.w(TAG, "createAccountWithEmail: failure", exception);
 
-                            // Send error message back to MainActivity
                             Intent intent = new Intent();
                             intent.putExtra("AUTH_ERROR", errorMessage);
                             setResult(RESULT_CANCELED, intent);
@@ -109,6 +112,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                         }
                     }
                 });
+
         // [END create_user_with_email]
     }
 
@@ -153,7 +157,6 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
 
     private void sendEmailVerification() {
         // Send verification email
-        // [START send_email_verification]
         final FirebaseUser user = mAuth.getCurrentUser();
         if(user != null){
             user.sendEmailVerification()
@@ -163,7 +166,48 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                             // Email sent
                         }
                     });
-            // [END send_email_verification]
+        }
+    }
+
+    private void checkUserInDB (FirebaseUser loggedUser){
+        if(loggedUser != null){
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("drinker")
+                    .document(loggedUser.getEmail())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                Log.i(TAG, "Drinker Data: " + documentSnapshot.getData());
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
+                                Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
+
+                                Intent intent = new Intent();
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } else {
+                                Log.i(TAG, "No drinker found.");
+                                storeDetails(loggedUser);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "Error fetching drinker: " + e);
+                            Intent intent = new Intent();
+                            intent.putExtra("AUTH_ERROR", "Error fetching drinker!");
+                            setResult(RESULT_CANCELED, intent);
+                            finish();
+                        }
+                    });
+        }else{
+            Intent intent = new Intent();
+            intent.putExtra("AUTH_ERROR", "Error fetching drinker!");
+            setResult(RESULT_CANCELED, intent);
+            finish();
         }
     }
 
@@ -178,10 +222,11 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
             drinker.put("trip_count", 0);
 
             db.collection("drinker")
-                    .add(drinker)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    .document(email)
+                    .set(drinker)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
-                        public void onSuccess(DocumentReference documentReference) {
+                        public void onSuccess(Void unused) {
                             Log.i(TAG, "store details: success");
                             Intent intent = new Intent();
                             setResult(RESULT_OK, intent);

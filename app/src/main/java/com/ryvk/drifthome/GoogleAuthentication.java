@@ -3,8 +3,6 @@ package com.ryvk.drifthome;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -28,14 +28,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import okhttp3.MediaType;
+import java.util.HashMap;
+
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class GoogleAuthentication extends AppCompatActivity {
 
@@ -96,6 +95,89 @@ public class GoogleAuthentication extends AppCompatActivity {
         }
     }
 
+    private void checkUserInDB (FirebaseUser loggedUser){
+        if(loggedUser != null){
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("drinker")
+                    .document(loggedUser.getEmail())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                Log.i(TAG, "Drinker Data: " + documentSnapshot.getData());
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
+                                Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
+
+                                Intent intent = new Intent();
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } else {
+                                Log.i(TAG, "No drinker found.");
+                                storeDetails(loggedUser);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "Error fetching drinker: " + e);
+                            Intent intent = new Intent();
+                            intent.putExtra("AUTH_ERROR", "Error fetching drinker!");
+                            setResult(RESULT_CANCELED, intent);
+                            finish();
+                        }
+                    });
+        }else{
+            Intent intent = new Intent();
+            intent.putExtra("AUTH_ERROR", "Error fetching drinker!");
+            setResult(RESULT_CANCELED, intent);
+            finish();
+        }
+    }
+
+    private void storeDetails(FirebaseUser loggedUser) {
+        if(loggedUser != null){
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            HashMap<String, Object> drinker = new HashMap<>();
+            drinker.put("name", loggedUser.getDisplayName());
+            drinker.put("email", loggedUser.getEmail());
+            drinker.put("mobile", loggedUser.getPhoneNumber());
+            drinker.put("trip_count", 0);
+
+            db.collection("drinker")
+                    .document(loggedUser.getEmail())
+                    .set(drinker)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Drinker loggedDrinker = new Drinker();
+                            loggedDrinker.setName(loggedUser.getDisplayName());
+                            loggedDrinker.setEmail(loggedUser.getEmail());
+                            loggedDrinker.setMobile(loggedUser.getPhoneNumber());
+
+                            Log.i(TAG, "store details: success");
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "store details: failure");
+                            Intent intent = new Intent();
+                            intent.putExtra("AUTH_ERROR", "Data update failed!");
+                            setResult(RESULT_CANCELED, intent);
+                            finish();
+                        }
+                    });
+
+        }
+    }
+
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -106,11 +188,11 @@ public class GoogleAuthentication extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
+                            checkUserInDB(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            updateUI(null);
+                            checkUserInDB(null);
                         }
                     }
                 });
