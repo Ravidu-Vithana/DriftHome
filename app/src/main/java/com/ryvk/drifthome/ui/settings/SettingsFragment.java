@@ -1,12 +1,15 @@
 package com.ryvk.drifthome.ui.settings;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -18,13 +21,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 import com.ryvk.drifthome.AlertUtils;
+import com.ryvk.drifthome.Drinker;
+import com.ryvk.drifthome.DrinkerConfig;
 import com.ryvk.drifthome.MainActivity;
 import com.ryvk.drifthome.R;
 import com.ryvk.drifthome.databinding.FragmentSettingsBinding;
+
+import java.util.HashMap;
 
 public class SettingsFragment extends Fragment {
 
@@ -40,13 +51,157 @@ public class SettingsFragment extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.ryvk.drifthome.data", Context.MODE_PRIVATE);
+        String drinkerConfigJSON = sharedPreferences.getString("userConfig",null);
+        String drinkerJSON = sharedPreferences.getString("user",null);
+        Gson gson = new Gson();
+        DrinkerConfig loggedDrinkerConfig = gson.fromJson(drinkerConfigJSON, DrinkerConfig.class);
+        Drinker loggedDrinker = gson.fromJson(drinkerJSON, Drinker.class);
+
         Switch additionalCharges = binding.switch1;
         Switch shakeToBook = binding.switch3;
         Switch autoClose = binding.switch4;
         Switch voiceNotifications = binding.switch5;
         Switch alwaysHome = binding.switch6;
 
-//        if (loggedDrinker.getName() != null) namefield.setText(loggedDrinker.getName());
+        if (loggedDrinkerConfig.isAdditional_charges()) additionalCharges.setChecked(true);
+        if (loggedDrinkerConfig.isShake_to_book()) shakeToBook.setChecked(true);
+        if (loggedDrinkerConfig.isAuto_close()) autoClose.setChecked(true);
+        if (loggedDrinkerConfig.isVoice_notifications()) voiceNotifications.setChecked(true);
+        if (loggedDrinkerConfig.isAlways_home()) alwaysHome.setChecked(true);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String,Object> updatingPropertyMap = new HashMap<>();
+
+        additionalCharges.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                loggedDrinkerConfig.setAdditional_charges(true);
+            } else {
+                loggedDrinkerConfig.setAdditional_charges(false);
+            }
+
+            updatingPropertyMap.put("additional_charges",loggedDrinkerConfig.isAdditional_charges());
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        });
+
+        shakeToBook.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                loggedDrinkerConfig.setShake_to_book(true);
+            } else {
+                loggedDrinkerConfig.setShake_to_book(false);
+            }
+
+            updatingPropertyMap.put("shake_to_book",loggedDrinkerConfig.isShake_to_book());
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        });
+
+        autoClose.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                loggedDrinkerConfig.setAuto_close(true);
+            } else {
+                loggedDrinkerConfig.setAuto_close(false);
+            }
+
+            updatingPropertyMap.put("auto_close",loggedDrinkerConfig.isAuto_close());
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        });
+
+        voiceNotifications.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                loggedDrinkerConfig.setVoice_notifications(true);
+            } else {
+                loggedDrinkerConfig.setVoice_notifications(false);
+            }
+
+            updatingPropertyMap.put("voice_notifications",loggedDrinkerConfig.isVoice_notifications());
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        });
+
+        alwaysHome.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                loggedDrinkerConfig.setAlways_home(true);
+            } else {
+                loggedDrinkerConfig.setAlways_home(false);
+            }
+
+            updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        });
 
         binding.button15.setOnClickListener(new View.OnClickListener() {
             @Override
