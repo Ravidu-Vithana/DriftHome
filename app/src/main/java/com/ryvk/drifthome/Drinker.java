@@ -1,5 +1,7 @@
 package com.ryvk.drifthome;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -11,6 +13,11 @@ public class Drinker {
     private String gender;
     private int tokens;
     private int trip_count;
+    private GeoPoint home_address;
+    private GeoPoint address1;
+    private GeoPoint address2;
+    private GeoPoint address3;
+    private GeoPoint address4;
     private String created_at;
     private String updated_at;
 
@@ -74,6 +81,46 @@ public class Drinker {
         this.trip_count = trip_count;
     }
 
+    public GeoPoint getHome_address() {
+        return home_address;
+    }
+
+    public void setHome_address(GeoPoint home_address) {
+        this.home_address = home_address;
+    }
+
+    public GeoPoint getAddress1() {
+        return address1;
+    }
+
+    public void setAddress1(GeoPoint address1) {
+        this.address1 = address1;
+    }
+
+    public GeoPoint getAddress2() {
+        return address2;
+    }
+
+    public void setAddress2(GeoPoint address2) {
+        this.address2 = address2;
+    }
+
+    public GeoPoint getAddress3() {
+        return address3;
+    }
+
+    public void setAddress3(GeoPoint address3) {
+        this.address3 = address3;
+    }
+
+    public GeoPoint getAddress4() {
+        return address4;
+    }
+
+    public void setAddress4(GeoPoint address4) {
+        this.address4 = address4;
+    }
+
     public String getCreated_at() {
         return created_at;
     }
@@ -91,7 +138,8 @@ public class Drinker {
     }
 
     public boolean isProfileComplete() {
-        return email != null && name != null && mobile != null && dob != null && gender != null;
+        return email != null && name != null && mobile != null && dob != null && gender != null &&
+                home_address != null && address1 != null && address2 != null && address3 != null && address4 != null;
     }
 
     public HashMap<String, Object> updateFields(String email, String name, String mobile, String gender, String dob) {
