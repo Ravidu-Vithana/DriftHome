@@ -219,6 +219,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
             drinker.put("name", name);
             drinker.put("email", email);
             drinker.put("mobile", mobile);
+            drinker.put("token", 0);
             drinker.put("trip_count", 0);
 
             db.collection("drinker")

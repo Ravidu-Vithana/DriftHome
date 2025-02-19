@@ -24,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:editable="false"
+                android:enabled="false"
                 android:ems="10"
                 android:fontFamily="@font/lexend_deca"
                 android:hint="@string/d_profileFragment_edittext5_placeholder"
