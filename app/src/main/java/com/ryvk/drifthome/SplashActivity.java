@@ -3,6 +3,8 @@ package com.ryvk.drifthome;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.ImageView;
 import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
@@ -11,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,11 +31,13 @@ public class SplashActivity extends AppCompatActivity {
             return insets;
         });
 
-        VideoView videoView = findViewById(R.id.videoView);
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
-        Uri uri = Uri.parse(videoPath);
-        videoView.setVideoURI(uri);
-        videoView.start();
+        ImageView gifImageView = findViewById(R.id.gifImageView);
+
+        // Load GIF
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.splash_video) // Place GIF in res/drawable
+                .into(gifImageView);
 
         if (InternetChecker.checkInternet(this)) {
             checkCurrentUser();
