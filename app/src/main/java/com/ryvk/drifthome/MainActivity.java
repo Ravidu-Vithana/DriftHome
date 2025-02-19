@@ -17,8 +17,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -125,8 +127,28 @@ public class MainActivity extends AppCompatActivity {
                                 editor.putString("user",drinkerJSON);
                                 editor.apply();
 
-                                Intent i = new Intent(MainActivity.this, BaseActivity.class);
-                                startActivity(i);
+                                db.collection("drinkerConfig")
+                                        .document(user.getEmail())
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot2 -> {
+                                            if (documentSnapshot2.exists()) {
+                                                DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+
+                                                String drinkerConfigJSON = gson.toJson(drinkerConfig);
+
+                                                editor.putString("userConfig", drinkerConfigJSON);
+                                                editor.apply();
+
+                                                Intent i = new Intent(MainActivity.this, BaseActivity.class);
+                                                startActivity(i);
+                                            } else {
+                                                AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                        });
+
                             } else {
                                 AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
                             }
@@ -142,6 +164,23 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    public void deleteUser() {
+        // [START delete_user]
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User account deleted.");
+                        }
+                    }
+                });
+        // [END delete_user]
+    }
+
 
     public static FirebaseUser getFirebaseUser (){
         return FirebaseAuth.getInstance().getCurrentUser();

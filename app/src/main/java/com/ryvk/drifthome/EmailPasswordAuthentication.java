@@ -231,9 +231,38 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void unused) {
                             Log.i(TAG, "store details: success");
-                            Intent intent = new Intent();
-                            setResult(RESULT_OK, intent);
-                            finish();
+
+                            HashMap<String, Object> drinkerConfig = new HashMap<>();
+                            drinkerConfig.put("additional_charges", false);
+                            drinkerConfig.put("shake_to_book", false);
+                            drinkerConfig.put("auto_close", false);
+                            drinkerConfig.put("voice_notifications", false);
+                            drinkerConfig.put("always_home", false);
+                            drinkerConfig.put("created_at", Validation.todayDateTime());
+                            drinkerConfig.put("updated_at", Validation.todayDateTime());
+
+                            db.collection("drinkerConfig")
+                                    .document(email)
+                                    .set(drinkerConfig)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.i(TAG, "store config details: success");
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG, "store config details: failure");
+                                            Intent intent = new Intent();
+                                            intent.putExtra("AUTH_ERROR", "Data update failed!");
+                                            setResult(RESULT_CANCELED, intent);
+                                            finish();
+                                        }
+                                    });
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -246,6 +275,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                             finish();
                         }
                     });
+
 
         }
     }

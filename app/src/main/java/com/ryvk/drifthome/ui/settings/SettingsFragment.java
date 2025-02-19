@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,14 @@ public class SettingsFragment extends Fragment {
 
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        Switch additionalCharges = binding.switch1;
+        Switch shakeToBook = binding.switch3;
+        Switch autoClose = binding.switch4;
+        Switch voiceNotifications = binding.switch5;
+        Switch alwaysHome = binding.switch6;
+
+//        if (loggedDrinker.getName() != null) namefield.setText(loggedDrinker.getName());
 
         binding.button15.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +81,46 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        binding.button21.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertUtils.showConfirmDialog(getContext(), "Confirm Action", "Are you sure you want to delete the account?",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                FirebaseUser loggedUser = MainActivity.getFirebaseUser();
+                                if(loggedUser != null){
+
+                                    deleteUser();
+
+                                    Log.i(TAG, "onClick: Delete account, account deleted------------------------");
+                                }else{
+                                    Log.i(TAG, "onClick: Delete account . NO user ----------------------------------");
+                                }
+                            }
+                        }
+                );
+            }
+        });
+
         return root;
+    }
+
+    public void deleteUser() {
+        // [START delete_user]
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User account deleted.");
+                        }
+                    }
+                });
+        // [END delete_user]
     }
 
     @Override

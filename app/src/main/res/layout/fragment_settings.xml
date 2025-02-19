@@ -19,6 +19,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <Button
+                android:id="@+id/button21"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/d_red1"
+                android:text="@string/d_settingsFragment_btn3"
+                app:cornerRadius="@dimen/d_button_corner_radius"
+                app:layout_constraintEnd_toEndOf="@+id/textView31"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView31"
+                app:layout_constraintTop_toBottomOf="@+id/button15" />
+
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
@@ -83,6 +96,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting1"
                 android:textSize="16sp"
+                android:checked="false"
                 app:layout_constraintEnd_toEndOf="@+id/button14"
                 app:layout_constraintStart_toStartOf="@+id/button14"
                 app:layout_constraintTop_toBottomOf="@+id/button14" />
@@ -95,6 +109,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting2"
                 android:textSize="16sp"
+                android:checked="false"
                 app:layout_constraintEnd_toEndOf="@+id/textView27"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/textView27"
@@ -120,6 +135,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting3"
                 android:textSize="16sp"
+                android:checked="false"
                 app:layout_constraintEnd_toEndOf="@+id/textView28"
                 app:layout_constraintStart_toStartOf="@+id/textView28"
                 app:layout_constraintTop_toBottomOf="@+id/textView28" />
@@ -144,6 +160,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting4"
                 android:textSize="16sp"
+                android:checked="false"
                 app:layout_constraintEnd_toEndOf="@+id/textView29"
                 app:layout_constraintStart_toStartOf="@+id/textView29"
                 app:layout_constraintTop_toBottomOf="@+id/textView29" />
@@ -168,6 +185,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting5"
                 android:textSize="16sp"
+                android:checked="false"
                 app:layout_constraintEnd_toEndOf="@+id/textView30"
                 app:layout_constraintStart_toStartOf="@+id/textView30"
                 app:layout_constraintTop_toBottomOf="@+id/textView30" />
@@ -204,7 +222,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button15" />
+                app:layout_constraintTop_toBottomOf="@+id/button21" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,12 +2,9 @@ package com.ryvk.drifthome;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -72,7 +69,26 @@ public class SplashActivity extends AppCompatActivity {
                             editor.putString("user",drinkerJSON);
                             editor.apply();
 
-                            navigateToHome();
+                            db.collection("drinkerConfig")
+                                    .document(user.getEmail())
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot2 -> {
+                                        if (documentSnapshot2.exists()) {
+                                            DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+
+                                            String drinkerConfigJSON = gson.toJson(drinkerConfig);
+
+                                            editor.putString("userConfig", drinkerConfigJSON);
+                                            editor.apply();
+
+                                            navigateToHome();
+                                        } else {
+                                            showErrorAndLogin();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        showErrorAndLogin();
+                                    });
                         } else {
                             showErrorAndLogin();
                         }
@@ -80,6 +96,7 @@ public class SplashActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         showErrorAndLogin();
                     });
+
         } else {
             navigateToLogin();
         }
