@@ -221,6 +221,8 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
             drinker.put("mobile", mobile);
             drinker.put("token", 0);
             drinker.put("trip_count", 0);
+            drinker.put("created_at", Validation.todayDateTime());
+            drinker.put("updated_at", Validation.todayDateTime());
 
             db.collection("drinker")
                     .document(email)

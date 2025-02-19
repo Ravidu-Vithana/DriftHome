@@ -1,6 +1,7 @@
 package com.ryvk.drifthome;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class Drinker {
     private String email;
@@ -8,9 +9,10 @@ public class Drinker {
     private String mobile;
     private String dob;
     private String gender;
+    private int tokens;
     private int trip_count;
-    private Date created_at;
-    private Date updated_at;
+    private String created_at;
+    private String updated_at;
 
     public Drinker(){
 
@@ -56,6 +58,14 @@ public class Drinker {
         this.gender = gender;
     }
 
+    public int getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(int tokens) {
+        this.tokens = tokens;
+    }
+
     public int getTrip_count() {
         return trip_count;
     }
@@ -64,19 +74,53 @@ public class Drinker {
         this.trip_count = trip_count;
     }
 
-    public Date getCreated_at() {
+    public String getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
 
-    public Date getUpdated_at() {
+    public String getUpdated_at() {
         return updated_at;
     }
 
-    public void setUpdated_at(Date updated_at) {
+    public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
     }
+
+    public boolean isProfileComplete() {
+        return email != null && name != null && mobile != null && dob != null && gender != null;
+    }
+
+    public HashMap<String, Object> updateFields(String email, String name, String mobile, String gender, String dob) {
+        if (email != null) {
+            this.email = email;
+        }
+        if (name != null) {
+            this.name = name;
+        }
+        if (mobile != null) {
+            this.mobile = mobile;
+        }
+        if (gender != null) {
+            this.gender = gender;
+        }
+        if (dob != null) {
+            this.dob = dob;
+        }
+
+        HashMap<String, Object> drinker = new HashMap<>();
+        drinker.put("name", this.getName());
+        drinker.put("email", this.getEmail());
+        drinker.put("mobile", this.getMobile());
+        drinker.put("gender", this.getGender());
+        drinker.put("dob", this.getDob());
+        drinker.put("updated_at", Validation.todayDateTime());
+
+        return drinker;
+
+    }
+
 }

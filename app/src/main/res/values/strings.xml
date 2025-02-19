@@ -45,13 +45,13 @@
     <string name="d_trip_text3">Your soul has been saved!</string>
 
     <string name="d_homeFragment_btn1_bookride">Book Ride</string>
-    <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
     <string name="d_homeFragment_btn1_listening">listening...</string>
-    <string name="d_homeFragment_btn1_noDropLocations">Add Drop locations</string>
+    <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
+    <string name="d_homeFragment_btn1_completeProfile">Complete your Profile</string>
     <string name="d_homeFragment_text1_bookride">Or say “Hey Buddy” to get started</string>
-    <string name="d_homeFragment_text1_insufficientCredit">Please top up the account to continue the service</string>
     <string name="d_homeFragment_text1_listening">say “Book Ride” to book your ride</string>
-    <string name="d_homeFragment_text1_noDropLocations">Please add one or more drop locations to activate the service.</string>
+    <string name="d_homeFragment_text1_insufficientCredit">Please top up the account to continue the service</string>
+    <string name="d_homeFragment_text1_completeProfile">Please complete your profile to activate the service.</string>
 
     <string name="d_settingsFragment_text1">Settings</string>
     <string name="d_settingsFragment_btn1">My Credit Card</string>
@@ -72,7 +72,7 @@
     <string name="d_profileFragment_text3">Name</string>
     <string name="d_profileFragment_edittext1_placeholder">ex: John Doe</string>
     <string name="d_profileFragment_text4">Date of Birth</string>
-    <string name="d_profileFragment_edittext2_placeholder">ex. 01/01/2000</string>
+    <string name="d_profileFragment_edittext2_placeholder">Select a date</string>
     <string name="d_profileFragment_text5">Mobile</string>
     <string name="d_profileFragment_edittext3_placeholder">ex. 0771231234</string>
     <string name="d_profileFragment_text6">Gender</string>

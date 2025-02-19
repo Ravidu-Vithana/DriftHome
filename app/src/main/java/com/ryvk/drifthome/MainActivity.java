@@ -1,6 +1,7 @@
 package com.ryvk.drifthome;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,13 +23,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final int RC_EPSIGNIN = 1001;
-
-    public static Drinker loggedDrinker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,14 +99,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(InternetChecker.checkInternet(MainActivity.this)){
-            checkCurrentUser();
-        }
-    }
-
     public void checkCurrentUser() {
         // [START check_current_user]
         FirebaseUser user = getFirebaseUser();
@@ -125,7 +117,13 @@ public class MainActivity extends AppCompatActivity {
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
                                 Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
 
-                                MainActivity.loggedDrinker = drinker;
+                                Gson gson = new Gson();
+                                String drinkerJSON = gson.toJson(drinker);
+
+                                SharedPreferences sharedPreferences = getSharedPreferences("com.ryvk.drifthome.data",MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("user",drinkerJSON);
+                                editor.apply();
 
                                 Intent i = new Intent(MainActivity.this, BaseActivity.class);
                                 startActivity(i);
