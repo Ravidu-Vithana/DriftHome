@@ -34,7 +34,6 @@ import java.util.Map;
 public class AddressListActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_MAP = 1003;
-    private Drinker loggedDrinker;
     private static final String TAG = "AddressListActivity";
     private RecyclerView recyclerView;
 
@@ -49,44 +48,37 @@ public class AddressListActivity extends AppCompatActivity {
             return insets;
         });
 
-        loggedDrinker = Drinker.getSPDrinker(AddressListActivity.this);
-
         recyclerView = findViewById(R.id.recyclerView);
         ProgressBar progressBar = findViewById(R.id.progressBar3);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        GeoPoint geoPoint = new GeoPoint(40.712776,-74.005974);
-        GeoPoint geoPoint2 = new GeoPoint(48.858844,2.294351);
-        GeoPoint geoPoint3 = new GeoPoint(-33.856784,151.215297);
+        new Thread(() -> {
+            Drinker loggedDrinker = Drinker.getSPDrinker(AddressListActivity.this);
+            loggedDrinker.getAddressCardList(AddressListActivity.this, new Drinker.AddressCallback() {
+                @Override
+                public void onAddressesReady(List<AddressCard> addressCards) {
+                    runOnUiThread(() -> {
+                        AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                    });
+                }
 
-        List<AddressCard> addressList = new ArrayList<>();
-        addressList.add(new AddressCard("123 Main St, New York",geoPoint));
-        addressList.add(new AddressCard("456 Elm St, Los Angeles",geoPoint2));
-        addressList.add(new AddressCard("789 Oak St, Chicago",geoPoint3));
-
-        loggedDrinker.getAddressCardList(this, new Drinker.AddressCallback() {
-            @Override
-            public void onAddressesReady(List<AddressCard> addressCards) {
-                runOnUiThread(() -> {
-                    AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
-                });
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e("Address Fetch", "Error: " + error);
-            }
-        });
+                @Override
+                public void onError(String error) {
+                    Log.e("Address Fetch", "Error: " + error);
+                }
+            });
+        }).start();
 
         Button addAddressButton = findViewById(R.id.button20);
         addAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Drinker loggedDrinker = Drinker.getSPDrinker(AddressListActivity.this);
                 if(loggedDrinker.getAddresses().size() < Drinker.ADDRESSLIMIT){
                     Intent intent = new Intent(AddressListActivity.this, MapActivity.class);
                     startActivityForResult(intent, REQUEST_CODE_MAP);
@@ -106,6 +98,7 @@ public class AddressListActivity extends AppCompatActivity {
             double longitude = data.getDoubleExtra("longitude", 0);
             GeoPoint selectedGeoPoint = new GeoPoint(latitude, longitude);
 
+            Drinker loggedDrinker = Drinker.getSPDrinker(AddressListActivity.this);
             loggedDrinker.addAddress(selectedGeoPoint, getApplicationContext(), new Drinker.AddressCallback() {
                 @Override
                 public void onAddressesReady(List<AddressCard> addressCards) {

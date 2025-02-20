@@ -42,6 +42,10 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.address_card, parent, false);
+
+        Gson gson = new Gson();
+        Log.i(TAG, "onCreateViewHolder: "+ gson.toJson(Drinker.getSPDrinker(context)));
+
         return new ViewHolder(view);
     }
 
@@ -89,6 +93,32 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
                             public void run() {
                                 AddressAdapter adapter = new AddressAdapter(addressCards, context);
                                 recyclerView.setAdapter(adapter);
+
+                                // Update the drinker's address list in Firestore
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                Map<String, Object> drinkerAddressData = new HashMap<>();
+                                drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
+
+                                db.collection("drinker")
+                                        .document(loggedDrinker.getEmail())
+                                        .update(drinkerAddressData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                Log.i(TAG, "Address removed successfully");
+                                                loggedDrinker.updateSPDrinker(context,loggedDrinker);
+
+                                                Toast.makeText(context, "Address removed successfully", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.e(TAG, "Address removal failed: " + e);
+                                                Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
                             }
                         });
                     }
@@ -98,30 +128,6 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
                         Log.i(TAG, "Address removing: failure " + error);
                     }
                 });
-
-                // Update the drinker's address list in Firestore
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                Map<String, Object> drinkerAddressData = new HashMap<>();
-                drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
-
-                db.collection("drinker")
-                        .document(loggedDrinker.getEmail())
-                        .update(drinkerAddressData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Log.i(TAG, "Address removed successfully");
-                                loggedDrinker.updateSPDrinker(context,loggedDrinker);
-                                Toast.makeText(context, "Address removed successfully", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "Address removal failed: " + e);
-                                Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
             }
         });
     }
