@@ -40,8 +40,12 @@ import java.util.HashMap;
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = "SettingsFragment";
+    HashMap<String,Object> updatingPropertyMap = new HashMap<>();
 
     private FragmentSettingsBinding binding;
+    private DrinkerConfig loggedDrinkerConfig;
+    private Drinker loggedDrinker;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,12 +55,8 @@ public class SettingsFragment extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.ryvk.drifthome.data", Context.MODE_PRIVATE);
-        String drinkerConfigJSON = sharedPreferences.getString("userConfig",null);
-        String drinkerJSON = sharedPreferences.getString("user",null);
-        Gson gson = new Gson();
-        DrinkerConfig loggedDrinkerConfig = gson.fromJson(drinkerConfigJSON, DrinkerConfig.class);
-        Drinker loggedDrinker = gson.fromJson(drinkerJSON, Drinker.class);
+        loggedDrinkerConfig = DrinkerConfig.getSPDrinkerConfig(getContext());
+        loggedDrinker = Drinker.getSPDrinker(getContext());
 
         Switch additionalCharges = binding.switch1;
         Switch shakeToBook = binding.switch3;
@@ -70,9 +70,6 @@ public class SettingsFragment extends Fragment {
         if (loggedDrinkerConfig.isVoice_notifications()) voiceNotifications.setChecked(true);
         if (loggedDrinkerConfig.isAlways_home()) alwaysHome.setChecked(true);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        HashMap<String,Object> updatingPropertyMap = new HashMap<>();
-
         additionalCharges.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (isChecked) {
                 loggedDrinkerConfig.setAdditional_charges(true);
@@ -81,22 +78,7 @@ public class SettingsFragment extends Fragment {
             }
 
             updatingPropertyMap.put("additional_charges",loggedDrinkerConfig.isAdditional_charges());
-            db.collection("drinkerConfig")
-                    .document(loggedDrinker.getEmail())
-                    .update(updatingPropertyMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.i(TAG, "update setting: success");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i(TAG, "update setting: failure");
-                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
-                        }
-                    });
+            updateSettings();
         });
 
         shakeToBook.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -107,22 +89,7 @@ public class SettingsFragment extends Fragment {
             }
 
             updatingPropertyMap.put("shake_to_book",loggedDrinkerConfig.isShake_to_book());
-            db.collection("drinkerConfig")
-                    .document(loggedDrinker.getEmail())
-                    .update(updatingPropertyMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.i(TAG, "update setting: success");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i(TAG, "update setting: failure");
-                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
-                        }
-                    });
+            updateSettings();
         });
 
         autoClose.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -133,22 +100,7 @@ public class SettingsFragment extends Fragment {
             }
 
             updatingPropertyMap.put("auto_close",loggedDrinkerConfig.isAuto_close());
-            db.collection("drinkerConfig")
-                    .document(loggedDrinker.getEmail())
-                    .update(updatingPropertyMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.i(TAG, "update setting: success");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i(TAG, "update setting: failure");
-                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
-                        }
-                    });
+            updateSettings();
         });
 
         voiceNotifications.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -159,22 +111,7 @@ public class SettingsFragment extends Fragment {
             }
 
             updatingPropertyMap.put("voice_notifications",loggedDrinkerConfig.isVoice_notifications());
-            db.collection("drinkerConfig")
-                    .document(loggedDrinker.getEmail())
-                    .update(updatingPropertyMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.i(TAG, "update setting: success");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i(TAG, "update setting: failure");
-                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
-                        }
-                    });
+            updateSettings();
         });
 
         alwaysHome.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -185,22 +122,8 @@ public class SettingsFragment extends Fragment {
             }
 
             updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
-            db.collection("drinkerConfig")
-                    .document(loggedDrinker.getEmail())
-                    .update(updatingPropertyMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.i(TAG, "update setting: success");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.i(TAG, "update setting: failure");
-                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
-                        }
-                    });
+            updateSettings();
+
         });
 
         binding.button15.setOnClickListener(new View.OnClickListener() {
@@ -260,6 +183,30 @@ public class SettingsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void updateSettings(){
+        if(loggedDrinker != null && loggedDrinkerConfig != null){
+            loggedDrinkerConfig.updateSPDrinkerConfig(getContext(),loggedDrinkerConfig);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("drinkerConfig")
+                    .document(loggedDrinker.getEmail())
+                    .update(updatingPropertyMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.i(TAG, "update setting: success");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "update setting: failure");
+                            AlertUtils.showAlert(getContext(),"Setting Update Failed!","Error: "+e);
+                        }
+                    });
+        }
     }
 
     public void deleteUser() {

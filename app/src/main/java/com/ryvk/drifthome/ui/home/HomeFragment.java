@@ -24,6 +24,10 @@ import com.ryvk.drifthome.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    Button mainButton;
+    TextView mainText;
+    Button tokensButton;
+    Drinker loggedDrinker;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -33,15 +37,22 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.ryvk.drifthome.data", Context.MODE_PRIVATE);
-        String drinkerJSON = sharedPreferences.getString("user",null);
+        loggedDrinker = Drinker.getSPDrinker(getContext());
 
-        Gson gson = new Gson();
-        Drinker loggedDrinker = gson.fromJson(drinkerJSON, Drinker.class);
+        mainButton = binding.button9;
+        mainText = binding.textView13;
+        tokensButton = binding.button8;
 
-        Button mainButton = binding.button9;
-        TextView mainText = binding.textView13;
-        Button tokensButton = binding.button8;
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshData();
+    }
+
+    private void refreshData(){
         tokensButton.setText(String.valueOf(loggedDrinker.getTokens()));
 
         int minToken = getActivity().getResources().getInteger(R.integer.minimum_token_amount);
@@ -72,8 +83,6 @@ public class HomeFragment extends Fragment {
                 }
             });
         }
-
-        return root;
     }
 
     @Override

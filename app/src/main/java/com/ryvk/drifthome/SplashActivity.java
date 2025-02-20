@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +42,8 @@ public class SplashActivity extends AppCompatActivity {
         // Load GIF
         Glide.with(this)
                 .asGif()
-                .load(R.drawable.splash_video) // Place GIF in res/drawable
+                .load(R.drawable.splash_video)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(gifImageView);
 
         if (InternetChecker.checkInternet(this)) {
@@ -51,55 +53,44 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
     private void checkCurrentUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("drinker")
-                    .document(user.getEmail())
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Drinker drinker = documentSnapshot.toObject(Drinker.class);
+        new Thread(() -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("drinker")
+                        .document(user.getEmail())
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
-                            Gson gson = new Gson();
-                            String drinkerJSON = gson.toJson(drinker);
+                                runOnUiThread(() -> drinker.updateSPDrinker(SplashActivity.this, drinker));
 
-                            SharedPreferences sharedPreferences = getSharedPreferences("com.ryvk.drifthome.data",MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("user",drinkerJSON);
-                            editor.apply();
+                                db.collection("drinkerConfig")
+                                        .document(user.getEmail())
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot2 -> {
+                                            if (documentSnapshot2.exists()) {
+                                                DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
 
-                            db.collection("drinkerConfig")
-                                    .document(user.getEmail())
-                                    .get()
-                                    .addOnSuccessListener(documentSnapshot2 -> {
-                                        if (documentSnapshot2.exists()) {
-                                            DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
-
-                                            String drinkerConfigJSON = gson.toJson(drinkerConfig);
-
-                                            editor.putString("userConfig", drinkerConfigJSON);
-                                            editor.apply();
-
-                                            navigateToHome();
-                                        } else {
-                                            showErrorAndLogin();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        showErrorAndLogin();
-                                    });
-                        } else {
-                            showErrorAndLogin();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        showErrorAndLogin();
-                    });
-
-        } else {
-            navigateToLogin();
-        }
+                                                runOnUiThread(() -> {
+                                                    drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
+                                                    navigateToHome();
+                                                });
+                                            } else {
+                                                runOnUiThread(this::showErrorAndLogin);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> runOnUiThread(this::showErrorAndLogin));
+                            } else {
+                                runOnUiThread(this::showErrorAndLogin);
+                            }
+                        })
+                        .addOnFailureListener(e -> runOnUiThread(this::showErrorAndLogin));
+            } else {
+                runOnUiThread(this::navigateToLogin);
+            }
+        }).start();
     }
 
     private void navigateToHome() {

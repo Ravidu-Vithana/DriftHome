@@ -119,13 +119,8 @@ public class MainActivity extends AppCompatActivity {
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
                                 Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
 
-                                Gson gson = new Gson();
-                                String drinkerJSON = gson.toJson(drinker);
-
-                                SharedPreferences sharedPreferences = getSharedPreferences("com.ryvk.drifthome.data",MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("user",drinkerJSON);
-                                editor.apply();
+                                //update shared preferences
+                                drinker.updateSPDrinker(MainActivity.this,drinker);
 
                                 db.collection("drinkerConfig")
                                         .document(user.getEmail())
@@ -134,10 +129,8 @@ public class MainActivity extends AppCompatActivity {
                                             if (documentSnapshot2.exists()) {
                                                 DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
 
-                                                String drinkerConfigJSON = gson.toJson(drinkerConfig);
-
-                                                editor.putString("userConfig", drinkerConfigJSON);
-                                                editor.apply();
+                                                //update shared preferences
+                                                drinkerConfig.updateSPDrinkerConfig(MainActivity.this,drinkerConfig);
 
                                                 Intent i = new Intent(MainActivity.this, BaseActivity.class);
                                                 startActivity(i);

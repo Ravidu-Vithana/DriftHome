@@ -1,5 +1,10 @@
 package com.ryvk.drifthome;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
+
 public class DrinkerConfig {
     private boolean additional_charges;
     private boolean shake_to_book;
@@ -77,5 +82,20 @@ public class DrinkerConfig {
         this.voice_notifications = voice_notifications;
         this.always_home = always_home;
         this.updated_at = updated_at;
+    }
+    public static DrinkerConfig getSPDrinkerConfig(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ryvk.drifthome.data", Context.MODE_PRIVATE);
+        String drinkerConfigJSON = sharedPreferences.getString("userConfig",null);
+        Gson gson = new Gson();
+        return gson.fromJson(drinkerConfigJSON, DrinkerConfig.class);
+    }
+    public void updateSPDrinkerConfig (Context context, DrinkerConfig drinkerConfig){
+        Gson gson = new Gson();
+        String drinkerConfigJSON = gson.toJson(drinkerConfig);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ryvk.drifthome.data",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userConfig", drinkerConfigJSON);
+        editor.apply();
     }
 }

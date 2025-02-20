@@ -46,11 +46,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("com.ryvk.drifthome.data", Context.MODE_PRIVATE);
-        String drinkerJSON = sharedPreferences.getString("user",null);
-
-        Gson gson = new Gson();
-        Drinker loggedDrinker = gson.fromJson(drinkerJSON, Drinker.class);
+        Drinker loggedDrinker = Drinker.getSPDrinker(getContext());
 
         EditText namefield = binding.editTextText8;
         EditText dobField = binding.editTextText9;
@@ -87,12 +83,7 @@ public class ProfileFragment extends Fragment {
                         dobField.getText().toString().trim()
                         );
 
-                Log.i(TAG, "onClick: "+loggedDrinker.getDob()+loggedDrinker.getGender()+loggedDrinker.getMobile());
-
-                Gson gson = new Gson();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("user",gson.toJson(loggedDrinker));
-                editor.apply();
+                loggedDrinker.updateSPDrinker(getContext(),loggedDrinker);
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
 
