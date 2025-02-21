@@ -112,6 +112,7 @@
     <string name="d_addressList_text1">Address List</string>
     <string name="d_addressList_btn1">+ Add address</string>
     <string name="d_addressList_text2">*** Choose drop locations that are wide apart to ensure maximum area coverage to minimize costs. ***</string>
+    <string name="d_addressList_text3">No Locations Added</string>
 
     <string name="d_addressCard_text1">2, Havelock Road, Colombo 03, Colombo</string>
     <string name="d_addressCard_btn1">Home</string>

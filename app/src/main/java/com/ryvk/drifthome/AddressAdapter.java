@@ -42,10 +42,6 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.address_card, parent, false);
-
-        Gson gson = new Gson();
-        Log.i(TAG, "onCreateViewHolder: "+ gson.toJson(Drinker.getSPDrinker(context)));
-
         return new ViewHolder(view);
     }
 
@@ -62,6 +58,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
         }
 
         RecyclerView recyclerView = ((Activity) context).findViewById(R.id.recyclerView);
+        TextView noLocationsAddedText = ((Activity) context).findViewById(R.id.textView48);
 
         GeoPoint geoPoint = item.getGeoPoint();
         double latitude = geoPoint.getLatitude();
@@ -91,6 +88,11 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
                         ((Activity) context).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if(addressCards.isEmpty()){
+                                    noLocationsAddedText.setVisibility(View.VISIBLE);
+                                }else{
+                                    noLocationsAddedText.setVisibility(View.INVISIBLE);
+                                }
                                 AddressAdapter adapter = new AddressAdapter(addressCards, context);
                                 recyclerView.setAdapter(adapter);
 

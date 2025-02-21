@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -36,6 +37,7 @@ public class AddressListActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_MAP = 1003;
     private static final String TAG = "AddressListActivity";
     private RecyclerView recyclerView;
+    private TextView noLocationsAddedText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class AddressListActivity extends AppCompatActivity {
             return insets;
         });
 
+        noLocationsAddedText = findViewById(R.id.textView48);
         recyclerView = findViewById(R.id.recyclerView);
         ProgressBar progressBar = findViewById(R.id.progressBar3);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -59,12 +62,17 @@ public class AddressListActivity extends AppCompatActivity {
             loggedDrinker.getAddressCardList(AddressListActivity.this, new Drinker.AddressCallback() {
                 @Override
                 public void onAddressesReady(List<AddressCard> addressCards) {
-                    runOnUiThread(() -> {
-                        AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
-                        recyclerView.setAdapter(adapter);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                    });
+                        runOnUiThread(() -> {
+                            if(addressCards.isEmpty()){
+                                noLocationsAddedText.setVisibility(View.VISIBLE);
+                            }else{
+                                noLocationsAddedText.setVisibility(View.INVISIBLE);
+                            }
+                            AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
+                            recyclerView.setAdapter(adapter);
+                            recyclerView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                        });
                 }
 
                 @Override
@@ -105,9 +113,14 @@ public class AddressListActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            if(addressCards.isEmpty()){
+                                noLocationsAddedText.setVisibility(View.VISIBLE);
+                            }else{
+                                noLocationsAddedText.setVisibility(View.INVISIBLE);
+                            }
                             AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
                             recyclerView.setAdapter(adapter);
-
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             Map<String, Object> drinkerAddressData = new HashMap<>();
                             drinkerAddressData.put("addresses", loggedDrinker.getAddresses());

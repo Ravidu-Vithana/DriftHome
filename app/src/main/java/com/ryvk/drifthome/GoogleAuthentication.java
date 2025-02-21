@@ -68,13 +68,6 @@ public class GoogleAuthentication extends AppCompatActivity {
         }
     }
 
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -156,10 +149,6 @@ public class GoogleAuthentication extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Drinker loggedDrinker = new Drinker();
-                            loggedDrinker.setName(loggedUser.getDisplayName());
-                            loggedDrinker.setEmail(loggedUser.getEmail());
-                            loggedDrinker.setMobile(loggedUser.getPhoneNumber());
 
                             Log.i(TAG, "store details: success");
                             HashMap<String, Object> drinkerConfig = new HashMap<>();
@@ -234,33 +223,4 @@ public class GoogleAuthentication extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void updateUI(FirebaseUser loggedUser) {
-
-        if(loggedUser != null){
-            loggedUser.getIdToken(true)
-                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-
-                            if(task.isSuccessful()){
-                                String firebaseToken = task.getResult().getToken();
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        OkHttpClient okHttpClient = new OkHttpClient();
-
-                                        finish();
-                                    }
-                                }).start();
-
-                            }else{
-                                Toast.makeText(GoogleAuthentication.this,"Failed to retrieve the Client Token",Toast.LENGTH_LONG).show();
-                            }
-
-                        }
-                    });
-
-        }
-    }
 }
