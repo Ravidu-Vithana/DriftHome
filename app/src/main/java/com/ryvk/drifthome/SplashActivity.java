@@ -73,10 +73,8 @@ public class SplashActivity extends AppCompatActivity {
                                             if (documentSnapshot2.exists()) {
                                                 DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
 
-                                                runOnUiThread(() -> {
-                                                    drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
-                                                    navigateToHome();
-                                                });
+                                                drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
+                                                runOnUiThread(this::navigateToHome);
                                             } else {
                                                 runOnUiThread(this::showErrorAndLogin);
                                             }
