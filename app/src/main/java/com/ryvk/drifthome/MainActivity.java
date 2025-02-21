@@ -53,14 +53,16 @@ public class MainActivity extends AppCompatActivity {
                 String email = emailEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString().trim();
 
-                Log.i(TAG, "email: "+email);
-                Log.i(TAG, "password: "+password);
-
-                Intent i = new Intent(MainActivity.this, EmailPasswordAuthentication.class);
-                i.putExtra("email",email);
-                i.putExtra("password",password);
-                i.putExtra("state",EmailPasswordAuthentication.SIGNINSTATE);
-                startActivityForResult(i,RC_EPSIGNIN);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent i = new Intent(MainActivity.this, EmailPasswordAuthentication.class);
+                        i.putExtra("email",email);
+                        i.putExtra("password",password);
+                        i.putExtra("state",EmailPasswordAuthentication.SIGNINSTATE);
+                        startActivityForResult(i,RC_EPSIGNIN);
+                    }
+                });
             }
         });
 
@@ -68,8 +70,13 @@ public class MainActivity extends AppCompatActivity {
         goToSignUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, SignUpActivity.class);
-                startActivity(i);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent i = new Intent(MainActivity.this, SignUpActivity.class);
+                        startActivity(i);
+                    }
+                });
             }
         });
 
@@ -77,8 +84,13 @@ public class MainActivity extends AppCompatActivity {
         googleSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this,GoogleAuthentication.class);
-                startActivityForResult(i,RC_EPSIGNIN);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent i = new Intent(MainActivity.this,GoogleAuthentication.class);
+                        startActivityForResult(i,RC_EPSIGNIN);
+                    }
+                });
             }
         });
 
@@ -92,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_CANCELED && data != null) {
                 String errorMessage = data.getStringExtra("AUTH_ERROR");
                 if (errorMessage != null) {
-                    AlertUtils.showAlert(this,"Login Error",errorMessage);
+                    runOnUiThread(()->AlertUtils.showAlert(this,"Login Error",errorMessage));
                 }
             }
             if(resultCode == RESULT_OK){
@@ -115,9 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()) {
-                                Log.i(TAG, "Drinker Data: " + documentSnapshot.getData());
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
-                                Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
 
                                 //update shared preferences
                                 drinker.updateSPDrinker(MainActivity.this,drinker);
@@ -132,18 +142,23 @@ public class MainActivity extends AppCompatActivity {
                                                 //update shared preferences
                                                 drinkerConfig.updateSPDrinkerConfig(MainActivity.this,drinkerConfig);
 
-                                                Intent i = new Intent(MainActivity.this, BaseActivity.class);
-                                                startActivity(i);
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Intent i = new Intent(MainActivity.this, BaseActivity.class);
+                                                        startActivity(i);
+                                                    }
+                                                });
                                             } else {
-                                                AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                                runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
                                             }
                                         })
                                         .addOnFailureListener(e -> {
-                                            AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                            runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
                                         });
 
                             } else {
-                                AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
                             }
                         }
                     })
@@ -151,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.i(TAG, "Error fetching drinker: " + e);
-                            AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                            runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
                         }
                     });
 

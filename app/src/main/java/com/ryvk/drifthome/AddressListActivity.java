@@ -88,10 +88,15 @@ public class AddressListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Drinker loggedDrinker = Drinker.getSPDrinker(AddressListActivity.this);
                 if(loggedDrinker.getAddresses().size() < Drinker.ADDRESSLIMIT){
-                    Intent intent = new Intent(AddressListActivity.this, MapActivity.class);
-                    startActivityForResult(intent, REQUEST_CODE_MAP);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(AddressListActivity.this, MapActivity.class);
+                            startActivityForResult(intent, REQUEST_CODE_MAP);
+                        }
+                    });
                 }else{
-                    AlertUtils.showAlert(AddressListActivity.this,"Limit Reached!","You can only add up to 5 addresses.");
+                    runOnUiThread(()->AlertUtils.showAlert(AddressListActivity.this,"Limit Reached!","You can only add up to 5 addresses."));
                 }
             }
         });
@@ -121,31 +126,31 @@ public class AddressListActivity extends AppCompatActivity {
                             }
                             AddressAdapter adapter = new AddressAdapter(addressCards, AddressListActivity.this);
                             recyclerView.setAdapter(adapter);
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            Map<String, Object> drinkerAddressData = new HashMap<>();
-                            drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
-
-                            db.collection("drinker")
-                                    .document(loggedDrinker.getEmail())
-                                    .update(drinkerAddressData)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            Log.i(TAG, "update address details: success");
-
-                                            Toast.makeText(getApplicationContext(), "Address added successfully!", Toast.LENGTH_LONG).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.i(TAG, "update address details: failure");
-                                            AlertUtils.showAlert(getApplicationContext(),"Address adding Failed!","Error: "+e);
-                                        }
-                                    });
-
                         }
                     });
+
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    Map<String, Object> drinkerAddressData = new HashMap<>();
+                    drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
+
+                    db.collection("drinker")
+                            .document(loggedDrinker.getEmail())
+                            .update(drinkerAddressData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Log.i(TAG, "update address details: success");
+
+                                    Toast.makeText(getApplicationContext(), "Address added successfully!", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.i(TAG, "update address details: failure");
+                                    AlertUtils.showAlert(getApplicationContext(),"Address adding Failed!","Error: "+e);
+                                }
+                            });
                 }
 
                 @Override

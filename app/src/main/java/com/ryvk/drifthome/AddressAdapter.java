@@ -95,33 +95,31 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
                                 }
                                 AddressAdapter adapter = new AddressAdapter(addressCards, context);
                                 recyclerView.setAdapter(adapter);
-
-                                // Update the drinker's address list in Firestore
-                                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                Map<String, Object> drinkerAddressData = new HashMap<>();
-                                drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
-
-                                db.collection("drinker")
-                                        .document(loggedDrinker.getEmail())
-                                        .update(drinkerAddressData)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                Log.i(TAG, "Address removed successfully");
-
-                                                Toast.makeText(context, "Address removed successfully", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.e(TAG, "Address removal failed: " + e);
-                                                Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
                             }
                         });
+                        // Update the drinker's address list in Firestore
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        Map<String, Object> drinkerAddressData = new HashMap<>();
+                        drinkerAddressData.put("addresses", loggedDrinker.getAddresses());
+
+                        db.collection("drinker")
+                                .document(loggedDrinker.getEmail())
+                                .update(drinkerAddressData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.i(TAG, "Address removed successfully");
+
+                                        Toast.makeText(context, "Address removed successfully", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e(TAG, "Address removal failed: " + e);
+                                        Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
 
                     @Override

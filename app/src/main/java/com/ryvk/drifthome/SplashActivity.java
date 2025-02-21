@@ -64,7 +64,7 @@ public class SplashActivity extends AppCompatActivity {
                             if (documentSnapshot.exists()) {
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
-                                runOnUiThread(() -> drinker.updateSPDrinker(SplashActivity.this, drinker));
+                                drinker.updateSPDrinker(SplashActivity.this, drinker);
 
                                 db.collection("drinkerConfig")
                                         .document(user.getEmail())
