@@ -60,6 +60,9 @@ dependencies {
     // Add the dependency for the Google Maps API
     implementation("com.google.android.gms:play-services-maps:19.0.0")
 
+    // Add the dependency for the Google Maps Location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Add the dependency for the Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
 

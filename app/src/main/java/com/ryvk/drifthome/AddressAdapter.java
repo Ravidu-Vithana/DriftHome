@@ -85,7 +85,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
         holder.buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loggedDrinker.removeAddress(position, context, new Drinker.AddressCallback() {
+                loggedDrinker.removeAddress(item, context, new Drinker.AddressCallback() {
                     @Override
                     public void onAddressesReady(List<AddressCard> addressCards) {
                         ((Activity) context).runOnUiThread(new Runnable() {
@@ -106,7 +106,6 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
                                             @Override
                                             public void onSuccess(Void unused) {
                                                 Log.i(TAG, "Address removed successfully");
-                                                loggedDrinker.updateSPDrinker(context,loggedDrinker);
 
                                                 Toast.makeText(context, "Address removed successfully", Toast.LENGTH_SHORT).show();
                                             }

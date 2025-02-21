@@ -27,7 +27,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.GeoPoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
-
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1002;
     private FloatingActionButton btnSelectLocation;
@@ -43,7 +42,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         btnSelectLocation = findViewById(R.id.btn_select_location);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -74,6 +72,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+
+            // default the location to Sri Lanka and move the camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(7.8731, 80.7718), 8));
+
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }

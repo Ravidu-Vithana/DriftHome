@@ -9,13 +9,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -111,8 +116,55 @@ public class SignUpActivity extends AppCompatActivity {
         FirebaseUser user = MainActivity.getFirebaseUser();
         if (user != null) {
             //already signed in, ready to intent Home
-            Intent i = new Intent(SignUpActivity.this, BaseActivity.class);
-            startActivity(i);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("drinker")
+                    .document(user.getEmail())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                Log.i(TAG, "Drinker Data: " + documentSnapshot.getData());
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
+                                Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
+
+                                //update shared preferences
+                                drinker.updateSPDrinker(SignUpActivity.this,drinker);
+
+                                db.collection("drinkerConfig")
+                                        .document(user.getEmail())
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot2 -> {
+                                            if (documentSnapshot2.exists()) {
+                                                DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+
+                                                //update shared preferences
+                                                drinkerConfig.updateSPDrinkerConfig(SignUpActivity.this,drinkerConfig);
+
+                                                Intent i = new Intent(SignUpActivity.this, BaseActivity.class);
+                                                startActivity(i);
+                                            } else {
+                                                AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                                        });
+
+                            } else {
+                                AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "Error fetching drinker: " + e);
+                            AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
+                        }
+                    });
+
         }
     }
 }

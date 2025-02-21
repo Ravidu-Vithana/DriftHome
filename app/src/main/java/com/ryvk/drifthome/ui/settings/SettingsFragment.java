@@ -142,6 +142,8 @@ public class SettingsFragment extends Fragment {
                                             .requestEmail()
                                             .build();
 
+                                    loggedDrinker.removeSPDrinker(getContext());
+
                                     GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
                                     FirebaseAuth mAuth = FirebaseAuth.getInstance();
                                     mAuth.signOut();

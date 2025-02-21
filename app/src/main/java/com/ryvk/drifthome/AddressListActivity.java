@@ -119,7 +119,6 @@ public class AddressListActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Void unused) {
                                             Log.i(TAG, "update address details: success");
-                                            loggedDrinker.updateSPDrinker(AddressListActivity.this,loggedDrinker);
 
                                             Toast.makeText(getApplicationContext(), "Address added successfully!", Toast.LENGTH_LONG).show();
                                         }

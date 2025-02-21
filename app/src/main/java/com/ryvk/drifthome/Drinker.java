@@ -171,6 +171,7 @@ public class Drinker {
     public boolean addAddress(GeoPoint address, Context context,AddressCallback callback) {
         if (address != null && addresses.size() < ADDRESSLIMIT) {
             addresses.add(address);
+            updateSPDrinker(context, this);
             getAddressCardList(context,callback);
             return true;
         } else {
@@ -178,14 +179,14 @@ public class Drinker {
         }
     }
 
-    public boolean removeAddress(int index, Context context,AddressCallback callback) {
-        if (index < 0 || index >= addresses.size()) {
-            return false;
-        }else{
-            addresses.remove(index);
+    public boolean removeAddress(AddressCard address, Context context,AddressCallback callback) {
+
+        if (addresses.remove(address.getGeoPoint())) {
+            updateSPDrinker(context, this);
             getAddressCardList(context,callback);
             return true;
         }
+        return false;
     }
 
     public GeoPoint getHomeAddress() {
@@ -279,6 +280,13 @@ public class Drinker {
         SharedPreferences sharedPreferences = context.getSharedPreferences("com.ryvk.drifthome.data",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("user",drinkerJSON);
+        editor.apply();
+    }
+
+    public void removeSPDrinker(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.ryvk.drifthome.data",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("user");
         editor.apply();
     }
 
