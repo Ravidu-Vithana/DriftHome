@@ -66,6 +66,9 @@ dependencies {
     // Add the dependency for the Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
 
+    //Add the dependancy for the Firebase Cloud Messaging
+    implementation("com.google.firebase:firebase-messaging")
+
     // Add OKHttp client
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 

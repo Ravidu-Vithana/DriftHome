@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
@@ -133,6 +134,15 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()) {
+
+                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        String token = task.getResult();
+                                        FirebaseFirestore.getInstance().collection("drinkers").document(user.getEmail())
+                                                .update("fcmToken", token);
+                                    }
+                                });
+
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
                                 //update shared preferences

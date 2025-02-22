@@ -34,6 +34,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -115,8 +116,14 @@ public class BookingActivity extends AppCompatActivity {
                             userLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                             // Use the GeoPoint as needed
                             Log.i(TAG, "onComplete: User Location: " + userLocation.getLatitude() + ", " + userLocation.getLongitude());
-                            dropLocation = getClosestGeoPoint(BookingActivity.this,loggedDrinker,userLocation,loggedDrinker.getAddresses());
-                            startBooking();
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dropLocation = getClosestGeoPoint(BookingActivity.this,loggedDrinker,userLocation,loggedDrinker.getAddresses());
+                                    startBooking();
+                                }
+                            }).start();
                         } else {
                             Log.i(TAG, "Failed to get location");
                             AlertUtils.showAlert(BookingActivity.this,"Error","Location services failed!");
@@ -201,19 +208,17 @@ public class BookingActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("trip")
-                .document(loggedDrinker.getEmail())
-                .update(tripMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .add(tripMap)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        Log.i(TAG, "add trip details: success");
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.i(TAG, "add trip details: success, ID: " + documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "add trip details: failure");
-                        AlertUtils.showAlert(getApplicationContext(),"Booking Failed!","Error: "+e);
+                        Log.i(TAG, "add trip details: failure", e);
                     }
                 });
     }

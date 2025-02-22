@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -127,9 +128,16 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()) {
-                                Log.i(TAG, "Drinker Data: " + documentSnapshot.getData());
+
+                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        String token = task.getResult();
+                                        FirebaseFirestore.getInstance().collection("drinkers").document(user.getEmail())
+                                                .update("fcmToken", token);
+                                    }
+                                });
+
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
-                                Log.i(TAG, "Drinker Data Object: " + drinker.getEmail() + drinker.getName());
 
                                 //update shared preferences
                                 drinker.updateSPDrinker(SignUpActivity.this,drinker);

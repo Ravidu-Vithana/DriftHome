@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 loggedDrinker = Drinker.getSPDrinker(getContext());
-                tokensButton.setText(String.valueOf(loggedDrinker.getTokens()));
+                ((Activity) getContext()).runOnUiThread(()->tokensButton.setText(String.valueOf(loggedDrinker.getTokens())));
 
                 int minToken = getActivity().getResources().getInteger(R.integer.minimum_token_amount);
 
