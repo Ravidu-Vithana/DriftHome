@@ -45,7 +45,7 @@ public class SettingsFragment extends Fragment {
     private FragmentSettingsBinding binding;
     private DrinkerConfig loggedDrinkerConfig;
     private Drinker loggedDrinker;
-
+    private LogoutListener logoutListener;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -231,5 +231,19 @@ public class SettingsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof LogoutListener) {
+            logoutListener = (LogoutListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement LogoutListener");
+        }
+    }
+
+    public interface LogoutListener {
+        void onLogout();
     }
 }

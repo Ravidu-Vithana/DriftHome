@@ -1,5 +1,6 @@
 package com.ryvk.drifthome;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -12,8 +13,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.ryvk.drifthome.databinding.ActivityBaseBinding;
+import com.ryvk.drifthome.ui.settings.SettingsFragment;
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity  implements SettingsFragment.LogoutListener {
 
     private ActivityBaseBinding binding;
 
@@ -35,4 +37,10 @@ public class BaseActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    @Override
+    public void onLogout() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
