@@ -16,6 +16,15 @@ public class Trip {
     private String created_at;
     private String updated_at;
 
+    public Trip(String drinker_email, GeoPoint pickup, GeoPoint drop){
+        this.drinker_email = drinker_email;
+        this.pickup = pickup;
+        this.drop = drop;
+        this.state = TRIP_REQUESTED;
+        this.created_at = Validation.todayDateTime();
+        this.updated_at = Validation.todayDateTime();
+    }
+
     public String getDrinker_email() {
         return drinker_email;
     }
@@ -72,16 +81,11 @@ public class Trip {
         this.updated_at = updated_at;
     }
 
-    public HashMap<String, Object> newTrip(String drinker_email, GeoPoint pickup, GeoPoint drop){
-        this.drinker_email = drinker_email;
-        this.pickup = pickup;
-        this.drop = drop;
-        this.state = TRIP_REQUESTED;
-        this.created_at = Validation.todayDateTime();
-        this.updated_at = Validation.todayDateTime();
+    public HashMap<String, Object> getTripHashMap(){
 
         HashMap<String, Object> trip = new HashMap<>();
         trip.put("drinker_email",this.drinker_email);
+        trip.put("saviour_email",this.saviour_email);
         trip.put("pickup",this.pickup);
         trip.put("drop",this.drop);
         trip.put("state",this.state);

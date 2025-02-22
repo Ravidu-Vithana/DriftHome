@@ -40,10 +40,12 @@ public class BookingActivity extends AppCompatActivity {
             return insets;
         });
 
+        Drinker loggedDrinker = Drinker.getSPDrinker(BookingActivity.this);
+
         Thread bookingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-
+                Trip trip = new Trip(loggedDrinker.getEmail(),);
             }
         });
         bookingThread.start();
