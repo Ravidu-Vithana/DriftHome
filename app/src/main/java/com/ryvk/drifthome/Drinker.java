@@ -198,7 +198,7 @@ public class Drinker {
         void onError(String error);
     }
 
-    private String getApiKey(Context context) {
+    public String getApiKey(Context context) {
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             return ai.metaData.getString("com.google.android.geo.API_KEY");
