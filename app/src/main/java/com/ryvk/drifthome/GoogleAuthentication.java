@@ -138,7 +138,7 @@ public class GoogleAuthentication extends AppCompatActivity {
             drinker.put("name", loggedUser.getDisplayName());
             drinker.put("email", loggedUser.getEmail());
             drinker.put("mobile", loggedUser.getPhoneNumber());
-            drinker.put("token", 0);
+            drinker.put("tokens", 0);
             drinker.put("trip_count", 0);
             drinker.put("created_at", Validation.todayDateTime());
             drinker.put("updated_at", Validation.todayDateTime());

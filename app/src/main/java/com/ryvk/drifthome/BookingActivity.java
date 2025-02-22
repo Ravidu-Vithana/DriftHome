@@ -43,12 +43,7 @@ public class BookingActivity extends AppCompatActivity {
         Thread bookingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                initiateBooking();
+
             }
         });
         bookingThread.start();
