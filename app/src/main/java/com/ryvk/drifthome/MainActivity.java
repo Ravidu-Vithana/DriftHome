@@ -135,15 +135,16 @@ public class MainActivity extends AppCompatActivity {
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot.exists()) {
 
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
+
                                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         String token = task.getResult();
-                                        FirebaseFirestore.getInstance().collection("drinkers").document(user.getEmail())
+                                        FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
                                                 .update("fcmToken", token);
+                                        SplashActivity.fcmToken = token;
                                     }
                                 });
-
-                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
                                 //update shared preferences
                                 drinker.updateSPDrinker(MainActivity.this,drinker);

@@ -20,11 +20,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
+
+    public static String fcmToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +65,19 @@ public class SplashActivity extends AppCompatActivity {
                         .get()
                         .addOnSuccessListener(documentSnapshot -> {
                             if (documentSnapshot.exists()) {
-                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
+                                Drinker drinker = documentSnapshot.toObject(Drinker.class);
                                 drinker.updateSPDrinker(SplashActivity.this, drinker);
+
+                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        String token = task.getResult();
+                                        FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
+                                                .update("fcmToken", token);
+                                        fcmToken = token;
+                                        Log.d(TAG, "checkCurrentUser: fcm token "+ fcmToken );
+                                    }
+                                });
 
                                 db.collection("drinkerConfig")
                                         .document(user.getEmail())
@@ -72,7 +85,6 @@ public class SplashActivity extends AppCompatActivity {
                                         .addOnSuccessListener(documentSnapshot2 -> {
                                             if (documentSnapshot2.exists()) {
                                                 DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
-
                                                 drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
                                                 runOnUiThread(this::navigateToHome);
                                             } else {

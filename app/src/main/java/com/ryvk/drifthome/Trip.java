@@ -12,9 +12,14 @@ public class Trip {
     private String saviour_email;
     private GeoPoint pickup;
     private GeoPoint drop;
+    private GeoPoint current_saviour_location;
     private int state;
     private String created_at;
     private String updated_at;
+
+    public Trip(){
+
+    }
 
     public Trip(String drinker_email, GeoPoint pickup, GeoPoint drop){
         this.drinker_email = drinker_email;
@@ -57,6 +62,14 @@ public class Trip {
         this.drop = drop;
     }
 
+    public GeoPoint getCurrent_saviour_location() {
+        return current_saviour_location;
+    }
+
+    public void setCurrent_saviour_location(GeoPoint current_saviour_location) {
+        this.current_saviour_location = current_saviour_location;
+    }
+
     public int getState() {
         return state;
     }
@@ -88,6 +101,7 @@ public class Trip {
         trip.put("saviour_email",this.saviour_email);
         trip.put("pickup",this.pickup);
         trip.put("drop",this.drop);
+        trip.put("current_saviour_location",this.current_saviour_location);
         trip.put("state",this.state);
         trip.put("created_at",this.created_at);
         trip.put("updated_at",this.updated_at);
