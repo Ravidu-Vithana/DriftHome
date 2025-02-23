@@ -89,7 +89,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     private GeoPoint userLocation;
     private GeoPoint saviourLocation;
     private GeoPoint dropLocation;
-    private Trip tripData;
+    private static Trip tripData;
     private String saviour_email;
     private static Saviour bookedSaviour;
     private GoogleMap mMap;
@@ -160,6 +160,10 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 new IntentFilter("com.ryvk.drifthome.RIDE_ACCEPTED"));
         LocalBroadcastManager.getInstance(this).registerReceiver(rideCancelledReceiver,
                 new IntentFilter("com.ryvk.drifthome.RIDE_CANCELLED"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(markAsArrivedReceiver,
+                new IntentFilter("com.ryvk.drifthome.MARK_AS_ARRIVED"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(startTripReceiver,
+                new IntentFilter("com.ryvk.drifthome.START_TRIP"));
 
         checkLocationPermission();
 
@@ -582,6 +586,12 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         });
     }
 
+    private void markAsArrived(){
+        Toast.makeText(BookingActivity.this,"Driver Arrived",Toast.LENGTH_LONG).show();
+        TextView infoText = findViewById(R.id.textView14);
+        runOnUiThread(()->infoText.setText(R.string.d_booking_text1_driverArrived));
+    }
+
     private void loadTripData(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("trip").document(rideId)
@@ -742,6 +752,25 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             }
         }
     };
+
+    private BroadcastReceiver markAsArrivedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("com.ryvk.drifthome.MARK_AS_ARRIVED".equals(intent.getAction())) {
+                Log.d(TAG, "onReceive: Mark as arrived");
+                markAsArrived();
+            }
+        }
+    };
+    private BroadcastReceiver startTripReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("com.ryvk.drifthome.START_TRIP".equals(intent.getAction())) {
+                Log.d(TAG, "onReceive: start trip");
+                startTrip();
+            }
+        }
+    };
     private void startTrip(){
         runOnUiThread(new Runnable() {
             @Override
@@ -785,6 +814,8 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(rideAcceptedReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(rideCancelledReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(markAsArrivedReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(startTripReceiver);
         super.onDestroy();
     }
 }

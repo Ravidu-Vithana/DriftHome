@@ -57,6 +57,10 @@ public class DriftMessagingService extends FirebaseMessagingService {
                 }).start();
             }else if(title.equals("rideCancelled")){
                 rideCancelled();
+            }else if(title.equals("markAsArrived")){
+                markAsArrived();
+            }else if(title.equals("startTrip")){
+                startTrip();
             }
         }
     }
@@ -76,6 +80,24 @@ public class DriftMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "rideCancelled: ride is cancelled -> "+body);
 
         Intent intent = new Intent("com.ryvk.drifthome.RIDE_CANCELLED");
+        intent.putExtra("rideData", body);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void markAsArrived(){
+        String body = remoteMessage.getNotification().getBody();
+        Log.d(TAG, "rideMarkAsArrived: ride is marked as arrived -> "+body);
+
+        Intent intent = new Intent("com.ryvk.drifthome.MARK_AS_ARRIVED");
+        intent.putExtra("rideData", body);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void startTrip(){
+        String body = remoteMessage.getNotification().getBody();
+        Log.d(TAG, "startTrip: trip is started -> "+body);
+
+        Intent intent = new Intent("com.ryvk.drifthome.START_TRIP");
         intent.putExtra("rideData", body);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
