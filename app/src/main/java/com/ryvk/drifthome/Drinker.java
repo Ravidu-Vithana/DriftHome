@@ -281,6 +281,7 @@ public class Drinker {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("user",drinkerJSON);
         editor.apply();
+        editor.commit();
     }
 
     public void removeSPDrinker(Context context){

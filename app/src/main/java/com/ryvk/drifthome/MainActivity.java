@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final int RC_EPSIGNIN = 1001;
-    private static final int RC_TOHOME = 1005;
-    private static final int RC_TOSIGNUP = 1006;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Intent i = new Intent(MainActivity.this, SignUpActivity.class);
-                        startActivityForResult(i,RC_TOSIGNUP);
+                        startActivity(i);
+                        finish();
                     }
                 });
             }
@@ -113,10 +112,6 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 checkCurrentUser();
             }
-        } else if (requestCode == RC_TOHOME) {
-            Log.i(TAG, "onActivityResult: Logout Successful");
-        } else if (requestCode == RC_TOSIGNUP) {
-            Log.i(TAG, "onActivityResult: Navigate back from SignUp Successful");
         }
     }
 
@@ -163,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
                                                     @Override
                                                     public void run() {
                                                         Intent i = new Intent(MainActivity.this, BaseActivity.class);
-                                                        startActivityForResult(i,RC_TOHOME);
+                                                        startActivity(i);
+                                                        finish();
                                                     }
                                                 });
                                             } else {
@@ -171,11 +167,11 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         })
                                         .addOnFailureListener(e -> {
-                                            runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
+                                            Log.d(TAG, "onSuccess: Login Error : Data retrieval failed! Please restart the application.");
                                         });
 
                             } else {
-                                runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
+                                Log.d(TAG, "onSuccess: Login Error : Data retrieval failed! Please restart the application.");
                             }
                         }
                     })

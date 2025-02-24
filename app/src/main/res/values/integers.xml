@@ -2,4 +2,5 @@
 <resources>
     <integer name="minimum_token_amount">4000</integer>
     <integer name="distance_threshold_meters">20000</integer>
+    <integer name="fee_per_km">200</integer>
 </resources>

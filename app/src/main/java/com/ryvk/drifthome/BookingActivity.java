@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -89,9 +90,9 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     private GeoPoint userLocation;
     private GeoPoint saviourLocation;
     private GeoPoint dropLocation;
-    private static Trip tripData;
+    public static Trip tripData;
     private String saviour_email;
-    private static Saviour bookedSaviour;
+    public static Saviour bookedSaviour;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private boolean isMapReady;
@@ -100,7 +101,10 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     private Thread standby;
     private Thread cancelButtonThread;
     private Drinker loggedDrinker;
+    private DrinkerConfig loggedDrinkerConfig;
+    private MediaPlayer mediaPlayer;
     private OnBackPressedCallback callback;
+    public static boolean isRideAccepted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,16 +148,19 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                         runOnUiThread(() -> timerBar.setProgress(progress));
                         Thread.sleep(1000);
                     }
-                    endRideRequest();
+                    if(!isRideAccepted){
+                        endRideRequest();
+                    }
                 } catch (InterruptedException e) {
                     Log.d(TAG, "Standby thread interrupted");
                 }
             }
         });
-        standby.start();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         loggedDrinker = Drinker.getSPDrinker(BookingActivity.this);
+        loggedDrinkerConfig = DrinkerConfig.getSPDrinkerConfig(BookingActivity.this);
+
         Log.d(TAG, "onCreate: booking activity fcm token variable "+SplashActivity.fcmToken);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(rideAcceptedReceiver,
@@ -167,6 +174,10 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
 
         checkLocationPermission();
 
+        if(loggedDrinkerConfig.isVoice_notifications()){
+            mediaPlayer = MediaPlayer.create(this, R.raw.booking_ride_wait);
+            mediaPlayer.start();
+        }
     }
 
     private void checkLocationPermission() {
@@ -212,10 +223,13 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                                         new Thread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                dropLocation = getClosestGeoPoint(BookingActivity.this,loggedDrinker,userLocation,loggedDrinker.getAddresses());
+                                                dropLocation = Utils.getClosestGeoPoint(BookingActivity.this,loggedDrinker,userLocation,loggedDrinker.getAddresses());
+                                                Log.d(TAG, "run: started calling startBooking");
                                                 startBooking();
                                             }
                                         }).start();
+                                    }else{
+                                        AlertUtils.showAlert(BookingActivity.this,"No Location Detected","Location services are off. Please turn them on and try again.");
                                     }
                                 }
                             })
@@ -230,62 +244,6 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             }
         }).start();
     }
-    public static GeoPoint getClosestGeoPoint(Context context, Drinker drinker, GeoPoint target, List<GeoPoint> geoPoints) {
-        if (geoPoints == null || geoPoints.isEmpty()) {
-            return null; // No points to compare
-        }
-
-        String apiKey = drinker.getApiKey(context);
-        if (apiKey == null || apiKey.isEmpty()) {
-            throw new IllegalStateException("API Key is missing or invalid!");
-        }
-
-        GeoPoint closest = null;
-        int minDistance = Integer.MAX_VALUE;
-
-        for (GeoPoint point : geoPoints) {
-            int distance = getRoadDistance(apiKey, target, point);
-            if (distance != -1 && distance < minDistance) {
-                minDistance = distance;
-                closest = point;
-            }
-        }
-
-        return closest;
-    }
-
-    private static int getRoadDistance(String apiKey, GeoPoint origin, GeoPoint destination) {
-        try {
-            String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
-                    origin.getLatitude() + "," + origin.getLongitude() +
-                    "&destinations=" + destination.getLatitude() + "," + destination.getLongitude() +
-                    "&key=" + apiKey;
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .get()
-                    .build();
-
-            Response response = client.newCall(request).execute();
-
-            if (response.isSuccessful() && response.body() != null) {
-                String responseData = response.body().string();
-                JSONObject jsonResponse = new JSONObject(responseData);
-                JSONArray rows = jsonResponse.getJSONArray("rows");
-
-                if (rows.length() > 0) {
-                    JSONObject elements = rows.getJSONObject(0).getJSONArray("elements").getJSONObject(0);
-                    if (!elements.getString("status").equals("OK")) {
-                        return -1; // Distance not available
-                    }
-                    return elements.getJSONObject("distance").getInt("value"); // Distance in meters
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1; // Default error value
-    }
     private void startBooking(){
 
         DrinkerConfig loggedDrinkerConfig = DrinkerConfig.getSPDrinkerConfig(BookingActivity.this);
@@ -293,7 +251,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         String apiKey = loggedDrinker.getApiKey(BookingActivity.this);
         if(loggedDrinkerConfig.isAlways_home()){
 
-            int distance = getRoadDistance(apiKey,userLocation,loggedDrinker.getHomeAddress());
+            int distance = Utils.getRoadDistance(apiKey,userLocation,loggedDrinker.getHomeAddress());
             int distanceThreshold = R.integer.distance_threshold_meters;
 
             if(distance <= distanceThreshold){
@@ -313,6 +271,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                         Log.i(TAG, "add trip details: success, ID: " + documentReference.getId());
 
                         rideId = documentReference.getId();
+                        loadTripData(false);
 
                         JsonObject json = new JsonObject();
                         Gson gson = new GsonBuilder()
@@ -352,6 +311,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                             public void onResponse(Call call, Response response) throws IOException {
                                 if (response.isSuccessful()) {
                                     System.out.println("Notification Sent: " + response.body().string());
+                                    standby.start();
                                 } else {
                                     System.out.println("Error: " + response.code());
                                 }
@@ -400,6 +360,12 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 });
     }
     private void updateUI(){
+
+        if(loggedDrinkerConfig.isVoice_notifications()){
+            mediaPlayer = MediaPlayer.create(this, R.raw.ride_booked);
+            mediaPlayer.start();
+        }
+
         Button bookBtn = findViewById(R.id.button10);
         Button cancelBtn = findViewById(R.id.button11);
         TextView infoText = findViewById(R.id.textView14);
@@ -511,7 +477,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                                     public void run() {
 
                                         getSupportFragmentManager().beginTransaction().show(mapView).commit();
-                                        loadTripData();
+                                        loadTripData(true);
                                     }
                                 });
                             }
@@ -587,19 +553,25 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void markAsArrived(){
+        if(loggedDrinkerConfig.isVoice_notifications()){
+            mediaPlayer = MediaPlayer.create(this, R.raw.driver_arrived);
+            mediaPlayer.start();
+        }
         Toast.makeText(BookingActivity.this,"Driver Arrived",Toast.LENGTH_LONG).show();
         TextView infoText = findViewById(R.id.textView14);
         runOnUiThread(()->infoText.setText(R.string.d_booking_text1_driverArrived));
     }
 
-    private void loadTripData(){
+    private void loadTripData(boolean loadMap){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("trip").document(rideId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         tripData = documentSnapshot.toObject(Trip.class);
-                        loadMap();
+                        if(loadMap){
+                            loadMap();
+                        }
                     } else {
                         Log.d("Firestore", "No such document exists");
                     }
@@ -717,7 +689,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             public void run() {
                 if (mMap != null && !polylinePoints.isEmpty()) {
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(getResources().getColor(R.color.d_blue))); // Replace with your desired color
-                    polyline.setWidth(10); // You can change the width of the polyline
+                    polyline.setWidth(10);
                 }
             }
         });
@@ -730,14 +702,33 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 Toast.makeText(BookingActivity.this,"Ride Accepted!",Toast.LENGTH_LONG).show();
                 String rideIntentData = intent.getStringExtra("rideData");
 
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                BookingActivity.tripData.setState(Trip.TRIP_ACCEPTED);
+
+                db.collection("trip")
+                        .document(rideId)
+                        .update("state",Trip.TRIP_ACCEPTED)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.i(TAG, "update trip state: success");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.i(TAG, "update trip state: failure");
+                                AlertUtils.showAlert(BookingActivity.this,"Trip Update Failed!","Error: "+e);
+                            }
+                        });
+
                 Gson gson = new GsonBuilder()
                         .registerTypeAdapter(GeoPoint.class, new GeoPointAdapter())
                         .create();
                 JsonObject rideData = gson.fromJson(rideIntentData, JsonObject.class);
 
                 saviour_email = rideData.get("saviour_email").getAsString();
-
-                // Call the confirmBooking method
                 confirmBooking();
             }
         }
@@ -767,6 +758,28 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         public void onReceive(Context context, Intent intent) {
             if ("com.ryvk.drifthome.START_TRIP".equals(intent.getAction())) {
                 Log.d(TAG, "onReceive: start trip");
+
+                BookingActivity.tripData.setState(Trip.TRIP_STARTED);
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                db.collection("trip")
+                        .document(rideId)
+                        .update("state",Trip.TRIP_STARTED)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.i(TAG, "update trip state: success");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.i(TAG, "update trip state: failure");
+                                AlertUtils.showAlert(BookingActivity.this,"Trip Update Failed!","Error: "+e);
+                            }
+                        });
+
                 startTrip();
             }
         }
@@ -776,22 +789,31 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void run() {
                 Intent i = new Intent(BookingActivity.this, TripActivity.class);
+                i.putExtra("rideId", rideId);
                 startActivity(i);
+                finish();
             }
         });
     }
 
     private void endRideRequest(){
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("trip").document(rideId)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Document successfully deleted!");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error deleting document", e);
-                });
+        if(loggedDrinkerConfig.isVoice_notifications()){
+            mediaPlayer = MediaPlayer.create(this, R.raw.ride_cancelled);
+            mediaPlayer.start();
+        }
+
+        if(rideId != null){
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("trip").document(rideId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Document successfully deleted!");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error deleting document", e);
+                    });
+        }
 
         finish();
     }
@@ -804,11 +826,25 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         if (cancelButtonThread != null && cancelButtonThread.isAlive()) {
             cancelButtonThread.interrupt();
         }
-        super.finish();
+
+        if(mediaPlayer != null && mediaPlayer.isPlaying()){
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    BookingActivity.super.finish();
+                }
+            });
+        }else{
+            super.finish();
+        }
     }
 
     @Override
     protected void onDestroy() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         if (cancelButtonThread != null && cancelButtonThread.isAlive()) {
             cancelButtonThread.interrupt();
         }

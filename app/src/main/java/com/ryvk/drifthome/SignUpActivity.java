@@ -27,7 +27,6 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
     private static final int RC_EPSIGNUP = 1000;
-    private static final int RC_TOHOME = 1005;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +100,6 @@ public class SignUpActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 checkCurrentUser();
             }
-        } else if (requestCode == RC_TOHOME) {
-            finish();
         }
     }
 
@@ -155,7 +152,8 @@ public class SignUpActivity extends AppCompatActivity {
                                                 drinkerConfig.updateSPDrinkerConfig(SignUpActivity.this,drinkerConfig);
 
                                                 Intent i = new Intent(SignUpActivity.this, BaseActivity.class);
-                                                startActivityForResult(i,RC_TOHOME);
+                                                startActivity(i);
+                                                finish();
                                             } else {
                                                 AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application.");
                                             }

@@ -11,16 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
+import com.ryvk.drifthome.BaseActivity;
 import com.ryvk.drifthome.BookingActivity;
 import com.ryvk.drifthome.Drinker;
+import com.ryvk.drifthome.DrinkerConfig;
 import com.ryvk.drifthome.R;
+import com.ryvk.drifthome.SplashActivity;
 import com.ryvk.drifthome.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
@@ -42,10 +48,49 @@ public class HomeFragment extends Fragment {
         mainButton = binding.button9;
         mainText = binding.textView13;
         tokensButton = binding.button8;
+        Button refreshButton = binding.button25;
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reloadData();
+            }
+        });
 
         refreshData();
 
         return root;
+    }
+
+    private void reloadData(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("drinker")
+                .document(loggedDrinker.getEmail())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+
+                        Drinker drinker = documentSnapshot.toObject(Drinker.class);
+                        drinker.updateSPDrinker(getContext(), drinker);
+
+                        db.collection("drinkerConfig")
+                                .document(loggedDrinker.getEmail())
+                                .get()
+                                .addOnSuccessListener(documentSnapshot2 -> {
+                                    if (documentSnapshot2.exists()) {
+                                        DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+                                        drinkerConfig.updateSPDrinkerConfig(getContext(), drinkerConfig);
+                                        ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh successful!",Toast.LENGTH_LONG).show());
+                                        refreshData();
+                                    } else {
+                                        ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh failed!",Toast.LENGTH_LONG).show());
+                                    }
+                                })
+                                .addOnFailureListener(e -> ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh failed!",Toast.LENGTH_LONG).show()));
+                    } else {
+                        ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh failed!",Toast.LENGTH_LONG).show());
+                    }
+                })
+                .addOnFailureListener(e -> ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh failed!",Toast.LENGTH_LONG).show()));
     }
 
     @Override

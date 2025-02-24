@@ -39,8 +39,8 @@ public class BaseActivity extends AppCompatActivity  implements SettingsFragment
 
     @Override
     public void onLogout() {
-        Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(i);
         finish();
     }
 }

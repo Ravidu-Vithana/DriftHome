@@ -153,8 +153,9 @@ public class SettingsFragment extends Fragment {
                                 }else{
                                     Log.i(TAG, "onClick: Logout . NO user ----------------------------------");
                                 }
-                                Intent i = new Intent(getContext(), MainActivity.class);
-                                startActivity(i);
+                                if (logoutListener != null) {
+                                    logoutListener.onLogout();
+                                }
                             }
                         }
                 );

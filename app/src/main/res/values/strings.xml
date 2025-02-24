@@ -50,6 +50,7 @@
     <string name="d_homeFragment_btn1_listening">listening...</string>
     <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
     <string name="d_homeFragment_btn1_completeProfile">Complete your Profile</string>
+    <string name="d_homeFragment_btn2">Refresh</string>
     <string name="d_homeFragment_text1_bookride">Or say “Hey Buddy” to get started</string>
     <string name="d_homeFragment_text1_listening">say “Book Ride” to book your ride</string>
     <string name="d_homeFragment_text1_insufficientCredit">Please top up the account to continue the service</string>

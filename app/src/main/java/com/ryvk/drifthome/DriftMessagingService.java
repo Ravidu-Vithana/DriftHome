@@ -11,33 +11,18 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class DriftMessagingService extends FirebaseMessagingService {
     private static final String TAG = "DriftMessagingService";
     private FusedLocationProviderClient fusedLocationClient;
     private RemoteMessage remoteMessage;
-    private String API_KEY;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -61,6 +46,8 @@ public class DriftMessagingService extends FirebaseMessagingService {
                 markAsArrived();
             }else if(title.equals("startTrip")){
                 startTrip();
+            }else if(title.equals("endTrip")){
+                endTrip();
             }
         }
     }
@@ -68,6 +55,8 @@ public class DriftMessagingService extends FirebaseMessagingService {
     private void rideRequestAccepted(){
         String body = remoteMessage.getNotification().getBody();
         Log.d(TAG, "rideRequestAccepted: ride is accepted -> "+body);
+
+        BookingActivity.isRideAccepted = true;
 
         Intent intent = new Intent("com.ryvk.drifthome.RIDE_ACCEPTED");
         intent.putExtra("rideData", body);
@@ -98,6 +87,15 @@ public class DriftMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "startTrip: trip is started -> "+body);
 
         Intent intent = new Intent("com.ryvk.drifthome.START_TRIP");
+        intent.putExtra("rideData", body);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void endTrip(){
+        String body = remoteMessage.getNotification().getBody();
+        Log.d(TAG, "endTrip: trip is ended -> "+body);
+
+        Intent intent = new Intent("com.ryvk.drifthome.END_TRIP");
         intent.putExtra("rideData", body);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }

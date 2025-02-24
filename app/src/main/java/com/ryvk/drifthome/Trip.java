@@ -6,8 +6,9 @@ import java.util.HashMap;
 
 public class Trip {
     public static final int TRIP_REQUESTED = 0;
-    public static final int TRIP_STARTED = 1;
-    public static final int TRIP_ENDED = 2;
+    public static final int TRIP_ACCEPTED = 1;
+    public static final int TRIP_STARTED = 2;
+    public static final int TRIP_ENDED = 3;
     private String drinker_email;
     private String saviour_email;
     private GeoPoint pickup;
