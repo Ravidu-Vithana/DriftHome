@@ -3,6 +3,7 @@ package com.ryvk.drifthome;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Trip {
     public static final int TRIP_REQUESTED = 0;
@@ -15,9 +16,9 @@ public class Trip {
     private GeoPoint drop;
     private GeoPoint current_saviour_location;
     private int state;
+    private Map<String, Object> feedback;
     private String created_at;
     private String updated_at;
-
     public Trip(){
 
     }
@@ -77,6 +78,14 @@ public class Trip {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public Map<String, Object> getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Map<String, Object> feedback) {
+        this.feedback = feedback;
     }
 
     public String getCreated_at() {

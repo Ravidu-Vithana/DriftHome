@@ -56,8 +56,6 @@ public class DriftMessagingService extends FirebaseMessagingService {
         String body = remoteMessage.getNotification().getBody();
         Log.d(TAG, "rideRequestAccepted: ride is accepted -> "+body);
 
-        BookingActivity.isRideAccepted = true;
-
         Intent intent = new Intent("com.ryvk.drifthome.RIDE_ACCEPTED");
         intent.putExtra("rideData", body);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

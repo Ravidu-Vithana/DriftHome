@@ -1,5 +1,6 @@
 package com.ryvk.drifthome.ui.profile;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -26,6 +28,7 @@ import com.ryvk.drifthome.AddCreditCardFragment;
 import com.ryvk.drifthome.AddressListActivity;
 import com.ryvk.drifthome.AlertUtils;
 import com.ryvk.drifthome.Drinker;
+import com.ryvk.drifthome.HistoryActivity;
 import com.ryvk.drifthome.MainActivity;
 import com.ryvk.drifthome.R;
 import com.ryvk.drifthome.Validation;
@@ -37,6 +40,7 @@ import java.util.HashMap;
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private FragmentProfileBinding binding;
+    private Button historyButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +49,18 @@ public class ProfileFragment extends Fragment {
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        historyButton =((Activity) getContext()).findViewById(R.id.historyButton);
+        if(historyButton != null){
+            historyButton.setVisibility(View.VISIBLE);
+            historyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(getContext(), HistoryActivity.class);
+                    startActivity(i);
+                }
+            });
+        }
 
         Drinker loggedDrinker = Drinker.getSPDrinker(getContext());
 
@@ -153,6 +169,9 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        if(historyButton != null){
+            historyButton.setVisibility(View.INVISIBLE);
+        }
         super.onDestroyView();
         binding = null;
     }

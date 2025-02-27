@@ -46,6 +46,8 @@
     <string name="d_trip_text2">Drop location not assigned still.</string>
     <string name="d_trip_text3">Your soul has been saved!</string>
 
+    <string name="d_history_text1">No History Available</string>
+
     <string name="d_homeFragment_btn1_bookride">Book Ride</string>
     <string name="d_homeFragment_btn1_listening">listening...</string>
     <string name="d_homeFragment_btn1_insufficientCredit">Top up your account</string>
@@ -106,6 +108,12 @@
     <string name="d_driverCardFragment_text1">Name:</string>
     <string name="d_driverCardFragment_text2">Vehicle:</string>
     <string name="d_driverCardFragment_text3n4_placeholder">_________________________</string>
+
+    <string name="d_historyCardFragment_text1">Date:</string>
+    <string name="d_historyCardFragment_text2">Name:</string>
+    <string name="d_historyCardFragment_text3">Vehicle:</string>
+    <string name="d_historyCardFragment_text_placeholder">_________________________</string>
+    <string name="d_historyCardFragment_btn">Give Feedback</string>
 
     <string name="d_tripFareFragment_text1">Total Fare</string>
     <string name="d_tripFareFragment_text2">Balance:</string>

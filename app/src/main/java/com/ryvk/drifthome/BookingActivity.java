@@ -104,7 +104,8 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     private DrinkerConfig loggedDrinkerConfig;
     private MediaPlayer mediaPlayer;
     private OnBackPressedCallback callback;
-    public static boolean isRideAccepted;
+    public boolean isRideAccepted;
+    public boolean isRideCancelled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,13 +143,14 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 try {
                     for (int x = 0; x <= 40; x++) {
                         if (Thread.currentThread().isInterrupted()) {
-                            return; // Stop the thread if interrupted
+                            return;
                         }
                         int progress = x;
                         runOnUiThread(() -> timerBar.setProgress(progress));
                         Thread.sleep(1000);
                     }
-                    if(!isRideAccepted){
+                    if(!isRideAccepted && !isRideCancelled){
+                        Log.d(TAG, "run: standby is ride accepted condition");
                         endRideRequest();
                     }
                 } catch (InterruptedException e) {
@@ -263,69 +265,74 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("trip")
-                .add(tripMap)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.i(TAG, "add trip details: success, ID: " + documentReference.getId());
+        if(!isRideCancelled){
+            db.collection("trip")
+                    .add(tripMap)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.i(TAG, "add trip details: success, ID: " + documentReference.getId());
 
-                        rideId = documentReference.getId();
-                        loadTripData(false);
+                            rideId = documentReference.getId();
+                            loadTripData(false);
 
-                        JsonObject json = new JsonObject();
-                        Gson gson = new GsonBuilder()
-                                .registerTypeAdapter(GeoPoint.class, new GeoPointAdapter())
-                                .create();
-                        try {
-                            json.addProperty("rideId", documentReference.getId());
-                            json.addProperty("customerName", loggedDrinker.getName());
-                            json.addProperty("fcmToken", SplashActivity.fcmToken);
-                            JsonObject locationJson = gson.toJsonTree(userLocation).getAsJsonObject();
-                            json.add("location", locationJson);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-
-                        String BASE_URL = getResources().getString(R.string.base_url);
-
-                        // Build request body
-                        RequestBody requestBody = RequestBody.create(json.toString(), MediaType.get("application/json; charset=utf-8"));
-
-                        // Create request
-                        Request request = new Request.Builder()
-                                .url(BASE_URL + "/send-ride-request")
-                                .post(requestBody)
-                                .build();
-
-                        // Execute request asynchronously
-                        client.newCall(request).enqueue(new Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
+                            JsonObject json = new JsonObject();
+                            Gson gson = new GsonBuilder()
+                                    .registerTypeAdapter(GeoPoint.class, new GeoPointAdapter())
+                                    .create();
+                            try {
+                                json.addProperty("rideId", documentReference.getId());
+                                json.addProperty("customerName", loggedDrinker.getName());
+                                json.addProperty("fcmToken", SplashActivity.fcmToken);
+                                JsonObject locationJson = gson.toJsonTree(userLocation).getAsJsonObject();
+                                json.add("location", locationJson);
+                            } catch (Exception e) {
                                 e.printStackTrace();
-                                System.out.println("Request Failed: " + e.getMessage());
+                                return;
                             }
 
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                if (response.isSuccessful()) {
-                                    System.out.println("Notification Sent: " + response.body().string());
-                                    standby.start();
-                                } else {
-                                    System.out.println("Error: " + response.code());
-                                }
-                            }
-                        });
+                            String BASE_URL = getResources().getString(R.string.base_url);
 
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "add trip details: failure", e);
-                    }
-                });
+                            // Build request body
+                            RequestBody requestBody = RequestBody.create(json.toString(), MediaType.get("application/json; charset=utf-8"));
+
+                            // Create request
+                            Request request = new Request.Builder()
+                                    .url(BASE_URL + "/send-ride-request")
+                                    .post(requestBody)
+                                    .build();
+
+                            if(!isRideCancelled){
+                                // Execute request asynchronously
+                                client.newCall(request).enqueue(new Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        e.printStackTrace();
+                                        System.out.println("Request Failed: " + e.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        if (response.isSuccessful()) {
+                                            System.out.println("Notification Sent: " + response.body().string());
+                                            standby.start();
+                                        } else {
+                                            System.out.println("Error: " + response.code());
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "add trip details: failure", e);
+
+                        }
+                    });
+        }
+
     }
     private void confirmBooking(){
 
@@ -493,6 +500,12 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void requestRideCancellation(){
+
+        if(mediaPlayer != null){
+            mediaPlayer = MediaPlayer.create(this, R.raw.requesting_cancel);
+            mediaPlayer.start();
+        }
+
         Button bookBtn = findViewById(R.id.button10);
         runOnUiThread(()->{
             bookBtn.setText(R.string.d_booking_btn1_requesting);
@@ -503,17 +516,21 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void run() {
                 try {
-                    Thread.sleep(5000);
+                    if(!cancelButtonThread.isInterrupted()){
+                        Thread.sleep(5000);
+                    }
                 }catch (Exception e){
                     Log.e(TAG, "run: cancel button thread",e);
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        bookBtn.setText(R.string.d_booking_btn1_cancel);
-                        bookBtn.setEnabled(true);
-                    }
-                });
+                if(!cancelButtonThread.isInterrupted()){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bookBtn.setText(R.string.d_booking_btn1_cancel);
+                            bookBtn.setEnabled(true);
+                        }
+                    });
+                }
             }
         });
         cancelButtonThread.start();
@@ -699,6 +716,9 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("com.ryvk.drifthome.RIDE_ACCEPTED".equals(intent.getAction())) {
+
+                isRideAccepted = true;
+
                 Toast.makeText(BookingActivity.this,"Ride Accepted!",Toast.LENGTH_LONG).show();
                 String rideIntentData = intent.getStringExtra("rideData");
 
@@ -798,10 +818,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
 
     private void endRideRequest(){
 
-        if(loggedDrinkerConfig.isVoice_notifications()){
-            mediaPlayer = MediaPlayer.create(this, R.raw.ride_cancelled);
-            mediaPlayer.start();
-        }
+        isRideCancelled = true;
 
         if(rideId != null){
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -815,7 +832,32 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                     });
         }
 
-        finish();
+        if(loggedDrinkerConfig.isVoice_notifications()){
+            if(mediaPlayer != null && mediaPlayer.isPlaying()){
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        playCancelVoice();
+                    }
+                });
+            }else{
+                playCancelVoice();
+            }
+        }else{
+            finish();
+        }
+    }
+
+    private void playCancelVoice (){
+        Log.d(TAG, "playCancelVoice: called");
+        mediaPlayer = MediaPlayer.create(BookingActivity.this, R.raw.ride_cancelled);
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                finish();
+            }
+        });
     }
 
     @Override

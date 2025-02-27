@@ -75,6 +75,7 @@ public class TripActivity extends AppCompatActivity implements OnMapReadyCallbac
     private OnBackPressedCallback callback;
     private Thread autoCloseThread;
     private MediaPlayer mediaPlayer;
+    private boolean backToHome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,13 +104,19 @@ public class TripActivity extends AppCompatActivity implements OnMapReadyCallbac
                     int seconds = x;
                     runOnUiThread(()->tripStateButton.setText("Auto closing in "+seconds+"..."));
                     try {
-                        Thread.sleep(1000);
+                        if(!autoCloseThread.isInterrupted()){
+                            Thread.sleep(1000);
+                        }else{
+                            break;
+                        }
                     }catch (Exception e){
                         Log.e(TAG, "run: auto closing button",e);
                     }
                 }
-                finishAffinity();
-                System.exit(0);
+                if(!autoCloseThread.isInterrupted() || !backToHome){
+                    finishAffinity();
+                    System.exit(0);
+                }
             }
         });
 
@@ -136,6 +143,7 @@ public class TripActivity extends AppCompatActivity implements OnMapReadyCallbac
         backToHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TripActivity.this.backToHome = true;
                 finish();
             }
         });

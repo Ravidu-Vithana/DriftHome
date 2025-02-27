@@ -79,7 +79,7 @@ public class HomeFragment extends Fragment {
                                     if (documentSnapshot2.exists()) {
                                         DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
                                         drinkerConfig.updateSPDrinkerConfig(getContext(), drinkerConfig);
-                                        ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh successful!",Toast.LENGTH_LONG).show());
+                                        ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh successful!",Toast.LENGTH_SHORT).show());
                                         refreshData();
                                     } else {
                                         ((Activity) getContext()).runOnUiThread(()-> Toast.makeText(getContext(),"Data refresh failed!",Toast.LENGTH_LONG).show());

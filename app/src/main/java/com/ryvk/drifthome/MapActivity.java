@@ -80,9 +80,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onMapClick(@NonNull LatLng latLng) {
+            public void onMapLongClick(@NonNull LatLng latLng) {
                 selectedLocation = latLng;
 
                 // Show the "Select" button
@@ -92,7 +92,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Selected Location"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-
             }
         });
     }
