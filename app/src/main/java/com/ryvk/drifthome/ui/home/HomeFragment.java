@@ -44,7 +44,6 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         mainButton = binding.button9;
         mainText = binding.textView13;
         tokensButton = binding.button8;
