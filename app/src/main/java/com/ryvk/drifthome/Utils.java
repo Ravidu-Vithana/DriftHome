@@ -1,8 +1,21 @@
 package com.ryvk.drifthome;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -106,5 +119,50 @@ public class Utils {
             Log.e("Utils", "getRoadDistance: Failure",e );
         }
         return -1;
+    }
+    public static void hideKeyboard(Activity activity) {
+        if (activity != null && activity.getCurrentFocus() != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+            }
+        }
+    }
+
+    public static void hideKeyboard(View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
+    public static Bitmap getRoundedImageBitmap(Uri imageUri){
+        Bitmap originalBitmap = BitmapFactory.decodeFile(imageUri.getPath());
+        int width = originalBitmap.getWidth();
+        int height = originalBitmap.getHeight();
+        int radius = Math.min(width, height) / 2;
+
+        Bitmap circularBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(circularBitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawCircle(width / 2, height / 2, radius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(originalBitmap, 0, 0, paint);
+
+        return circularBitmap;
+    }
+
+    public static void loadImageUrlToView(Context context, ImageView imageView, String downloadUrl){
+        Glide.with(context)
+                .load(downloadUrl)
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView);
     }
 }

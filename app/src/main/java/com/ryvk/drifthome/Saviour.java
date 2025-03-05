@@ -9,6 +9,7 @@ public class Saviour {
     private String dob;
     private String gender;
     private String vehicle;
+    private String profile_pic;
     private String fcmToken;
     private GeoPoint currentLocation;
 
@@ -58,6 +59,14 @@ public class Saviour {
 
     public void setVehicle(String vehicle) {
         this.vehicle = vehicle;
+    }
+
+    public String getProfile_pic() {
+        return profile_pic;
+    }
+
+    public void setProfile_pic(String profile_pic) {
+        this.profile_pic = profile_pic;
     }
 
     public String getFcmToken() {

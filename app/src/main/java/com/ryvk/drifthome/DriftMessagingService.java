@@ -122,9 +122,11 @@ public class DriftMessagingService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         Log.d(TAG, "New token generated: " + token);
         Drinker drinker = Drinker.getSPDrinker(this);
-        FirebaseFirestore.getInstance().collection("drinker").document(drinker.getEmail())
-                .update("fcmToken", token);
-        SplashActivity.fcmToken = token;
+        if(drinker != null){
+            FirebaseFirestore.getInstance().collection("drinker").document(drinker.getEmail())
+                    .update("fcmToken", token);
+            SplashActivity.fcmToken = token;
+        }
     }
 
 }

@@ -1,17 +1,21 @@
 package com.ryvk.drifthome.ui.settings;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -24,21 +28,28 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 import com.ryvk.drifthome.AlertUtils;
 import com.ryvk.drifthome.Drinker;
 import com.ryvk.drifthome.DrinkerConfig;
 import com.ryvk.drifthome.MainActivity;
+import com.ryvk.drifthome.PaymentHelper;
 import com.ryvk.drifthome.R;
+import com.ryvk.drifthome.TopupDialogFragment;
+import com.ryvk.drifthome.Validation;
 import com.ryvk.drifthome.databinding.FragmentSettingsBinding;
 
 import java.util.HashMap;
 
-public class SettingsFragment extends Fragment {
+import lk.payhere.androidsdk.PHConstants;
+import lk.payhere.androidsdk.PHResponse;
+import lk.payhere.androidsdk.model.StatusResponse;
 
+public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
     HashMap<String,Object> updatingPropertyMap = new HashMap<>();
 
@@ -46,6 +57,8 @@ public class SettingsFragment extends Fragment {
     private DrinkerConfig loggedDrinkerConfig;
     private Drinker loggedDrinker;
     private LogoutListener logoutListener;
+    private Switch alwaysHome;
+    private String amount;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,32 +71,94 @@ public class SettingsFragment extends Fragment {
         loggedDrinkerConfig = DrinkerConfig.getSPDrinkerConfig(getContext());
         loggedDrinker = Drinker.getSPDrinker(getContext());
 
-        Switch additionalCharges = binding.switch1;
+        alwaysHome = binding.switch6;
         Switch shakeToBook = binding.switch3;
         Switch autoClose = binding.switch4;
         Switch voiceNotifications = binding.switch5;
-        Switch alwaysHome = binding.switch6;
+        Button editRangeButton = binding.button27;
+        editRangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showEditRangeBottomSheet();
+            }
+        });
 
-        if (loggedDrinkerConfig.isAdditional_charges()) additionalCharges.setChecked(true);
+        if (loggedDrinkerConfig.isAlways_home()){
+            alwaysHome.setChecked(true);
+            editRangeButton.setVisibility(View.VISIBLE);
+            editRangeButton.setEnabled(true);
+        }
         if (loggedDrinkerConfig.isShake_to_book()) shakeToBook.setChecked(true);
         if (loggedDrinkerConfig.isAuto_close()) autoClose.setChecked(true);
         if (loggedDrinkerConfig.isVoice_notifications()) voiceNotifications.setChecked(true);
-        if (loggedDrinkerConfig.isAlways_home()) alwaysHome.setChecked(true);
 
-        additionalCharges.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+
+        alwaysHome.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (isChecked) {
-                loggedDrinkerConfig.setAdditional_charges(true);
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_home_range, null);
+                bottomSheetDialog.setContentView(view);
+
+                EditText rangeField = view.findViewById(R.id.amountInput);
+                Button setRangeButton = view.findViewById(R.id.btnProceed);
+
+                boolean[] isDismissedByButton = {false};
+
+                bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (!isDismissedByButton[0]) {
+                            alwaysHome.setChecked(false);
+                        }
+                    }
+                });
+
+                setRangeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String range = rangeField.getText().toString().trim();
+                        if(Validation.isInteger(range) && Integer.parseInt(range) > 0){
+
+                            loggedDrinkerConfig.setAlways_home(true);
+                            loggedDrinkerConfig.setHome_range(Integer.parseInt(range));
+                            updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
+                            updatingPropertyMap.put("home_range",Integer.parseInt(range));
+                            updateSettings();
+
+                            editRangeButton.setVisibility(View.VISIBLE);
+                            editRangeButton.setEnabled(true);
+
+                            isDismissedByButton[0] = true;
+                            bottomSheetDialog.dismiss();
+                        }else{
+                            Toast.makeText(getContext(),"Range is not valid!",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                bottomSheetDialog.show();
             } else {
-                loggedDrinkerConfig.setAdditional_charges(false);
+                editRangeButton.setVisibility(View.INVISIBLE);
+                editRangeButton.setEnabled(false);
+                loggedDrinkerConfig.setAlways_home(false);
+                loggedDrinkerConfig.setHome_range(0);
+                updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
+                updatingPropertyMap.put("home_range",0);
+                updateSettings();
             }
 
-            updatingPropertyMap.put("additional_charges",loggedDrinkerConfig.isAdditional_charges());
-            updateSettings();
         });
 
         shakeToBook.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (isChecked) {
-                loggedDrinkerConfig.setShake_to_book(true);
+                SensorManager sensorManager = (SensorManager) ((Activity)getContext()).getSystemService(Context.SENSOR_SERVICE);
+                if(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
+                    loggedDrinkerConfig.setShake_to_book(true);
+                }else{
+                    AlertUtils.showAlert(getContext(),"Not Allowed!","Your device does not support this feature.");
+                    shakeToBook.setChecked(false);
+                }
+
             } else {
                 loggedDrinkerConfig.setShake_to_book(false);
             }
@@ -114,16 +189,11 @@ public class SettingsFragment extends Fragment {
             updateSettings();
         });
 
-        alwaysHome.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            if (isChecked) {
-                loggedDrinkerConfig.setAlways_home(true);
-            } else {
-                loggedDrinkerConfig.setAlways_home(false);
+        binding.button26.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPaymentAlertDialog();
             }
-
-            updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
-            updateSettings();
-
         });
 
         binding.button15.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +256,176 @@ public class SettingsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void showPaymentAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_topup_dialog, null);
+        builder.setView(view);
+
+        Drinker loggedDrinker = Drinker.getSPDrinker(getContext());
+
+        EditText amountInput = view.findViewById(R.id.amountInput);
+        Button btnProceed = view.findViewById(R.id.btnProceed);
+        AlertDialog dialog = builder.create();
+
+        btnProceed.setOnClickListener(v -> {
+            amount = amountInput.getText().toString();
+
+            if(!Validation.isInteger(amount)){
+                AlertUtils.showAlert(getContext(),"Error","Invalid Amount");
+            }else if(Integer.parseInt(amount) < 2000){
+                AlertUtils.showAlert(getContext(),"Error","Minimum Top up amount is Rs.2000");
+            }else{
+
+                HashMap<String, Object> paymentHash = new HashMap<>();
+                paymentHash.put("drinker_email", loggedDrinker.getEmail());
+                paymentHash.put("amount", amount);
+                paymentHash.put("created_at", Validation.todayDateTime());
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("payment")
+                        .add(paymentHash)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d(TAG, "onSuccess: payment document added");
+                                dialog.dismiss();
+                                PaymentHelper.initiatePayment(SettingsFragment.this, Double.parseDouble(amount), documentReference.getId(),
+                                        "Top up account.", loggedDrinker.getEmail(), loggedDrinker.getName(), "", loggedDrinker.getMobile());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "onFailure: payment document adding failed");
+                                AlertUtils.showAlert(getContext(),"Error","Payment details adding failed!");
+                            }
+                        });
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PaymentHelper.RC_PAYHERE && data != null && data.hasExtra(PHConstants.INTENT_EXTRA_RESULT)) {
+            PHResponse<StatusResponse> response = (PHResponse<StatusResponse>) data.getSerializableExtra(PHConstants.INTENT_EXTRA_RESULT);
+            if (resultCode == Activity.RESULT_OK) {
+                String msg;
+                if (response != null){
+                    if (response.isSuccess()){
+                        msg = "Activity result:" + response.getData().toString();
+                        if(response.getStatus() == PHResponse.STATUS_SUCCESS){
+                            loggedDrinker.setTokens(loggedDrinker.getTokens()+Integer.parseInt(amount));
+                            loggedDrinker.updateSPDrinker(getContext(),loggedDrinker);
+
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                            db.collection("drinker")
+                                    .document(loggedDrinker.getEmail())
+                                    .update("tokens",loggedDrinker.getTokens())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Log.i(TAG, "update tokens: success");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i(TAG, "update tokens: failure");
+                                            AlertUtils.showAlert(getContext(),"Tokens Update Failed!","Error: "+e);
+                                        }
+                                    });
+
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_CANCELED){
+                            Toast.makeText(getContext(),"Payment Cancelled",Toast.LENGTH_LONG).show();
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_NETWORK){
+                            Toast.makeText(getContext(),"Network error occured!",Toast.LENGTH_LONG).show();
+                        }else if(response.getStatus() == PHResponse.STATUS_SESSION_TIME_OUT){
+                            AlertUtils.showAlert(getContext(),"Error","Your session timed out.");
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_DATA){
+                            Toast.makeText(getContext(),"Data error occurred",Toast.LENGTH_LONG).show();
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_PAYMENT){
+                            Toast.makeText(getContext(),"Payment error occurred",Toast.LENGTH_LONG).show();
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_VALIDATION){
+                            Toast.makeText(getContext(),"Validation Failed!",Toast.LENGTH_LONG).show();
+                        }else if(response.getStatus() == PHResponse.STATUS_ERROR_UNKNOWN){
+                            AlertUtils.showAlert(getContext(),"Error","An unknown error occurred. Please try again later.");
+                        }else{
+                            Log.d(TAG, "onActivityResult: no match for status code: "+response.getStatus());
+                            AlertUtils.showAlert(getContext(),"Error","Response status is not valid. Please try again later.");
+                        }
+                    }else{
+                        msg = "Result:" + response.toString();
+                    }
+                }else{
+                    msg = "Result: no response";
+                }
+                Log.d(TAG, msg);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                if (response != null){
+                    Log.d(TAG, "onActivityResult: Top up failed!"+response.toString());
+                    if(response.getStatus() == PHResponse.STATUS_ERROR_CANCELED){
+                        Toast.makeText(getContext(),"Payment Cancelled",Toast.LENGTH_LONG).show();
+                    }else if(response.getStatus() == PHResponse.STATUS_ERROR_NETWORK){
+                        Toast.makeText(getContext(),"Network error occured!",Toast.LENGTH_LONG).show();
+                    }else if(response.getStatus() == PHResponse.STATUS_SESSION_TIME_OUT){
+                        AlertUtils.showAlert(getContext(),"Error","Your session timed out.");
+                    }else if(response.getStatus() == PHResponse.STATUS_ERROR_DATA){
+                        Toast.makeText(getContext(),"Data error occurred",Toast.LENGTH_LONG).show();
+                    }else if(response.getStatus() == PHResponse.STATUS_ERROR_PAYMENT){
+                        Toast.makeText(getContext(),"Payment error occurred",Toast.LENGTH_LONG).show();
+                    }else if(response.getStatus() == PHResponse.STATUS_ERROR_VALIDATION){
+                        Toast.makeText(getContext(),"Validation Failed!",Toast.LENGTH_LONG).show();
+                    }else if(response.getStatus() == PHResponse.STATUS_ERROR_UNKNOWN){
+                        AlertUtils.showAlert(getContext(),"Error","An unknown error occurred. Please try again later.");
+                    }else{
+                        Log.d(TAG, "onActivityResult: no match for status code: "+response.getStatus());
+                        AlertUtils.showAlert(getContext(),"Error","Response status is not valid. Please try again later.");
+                    }
+                }else {
+                    Toast.makeText(getContext(),"Request cancelled",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void showEditRangeBottomSheet(){
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_home_range, null);
+        bottomSheetDialog.setContentView(view);
+
+        int range = loggedDrinkerConfig.getHome_range();
+
+        EditText rangeField = view.findViewById(R.id.amountInput);
+        rangeField.setText(String.valueOf(range));
+
+        Button setRangeButton = view.findViewById(R.id.btnProceed);
+
+        setRangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String range = rangeField.getText().toString().trim();
+                if(Validation.isInteger(range) && Integer.parseInt(range) > 0){
+
+                    loggedDrinkerConfig.setAlways_home(true);
+                    loggedDrinkerConfig.setHome_range(Integer.parseInt(range));
+                    updatingPropertyMap.put("always_home",loggedDrinkerConfig.isAlways_home());
+                    updatingPropertyMap.put("home_range",Integer.parseInt(range));
+                    updateSettings();
+
+                    bottomSheetDialog.dismiss();
+                }else{
+                    Toast.makeText(getContext(),"Range is not valid!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        bottomSheetDialog.show();
     }
 
     private void updateSettings(){

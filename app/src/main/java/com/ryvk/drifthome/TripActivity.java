@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -364,11 +365,15 @@ public class TripActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void updateUI(boolean isStart){
         if(isStart){
             TextView locationText = findViewById(R.id.textView20);
+            ImageView saviourProfileImageView = findViewById(R.id.imageView2);
             TextView saviourNameText = findViewById(R.id.textView17);
             TextView saviourVehicleText = findViewById(R.id.textView18);
 
             runOnUiThread(()->{
                 locationText.setText(dropLocation);
+                if(BookingActivity.bookedSaviour.getProfile_pic() != null && !BookingActivity.bookedSaviour.getProfile_pic().isBlank()){
+                    Utils.loadImageUrlToView(TripActivity.this,saviourProfileImageView,BookingActivity.bookedSaviour.getProfile_pic());
+                }
                 saviourNameText.setText(BookingActivity.bookedSaviour.getName());
                 saviourVehicleText.setText(BookingActivity.bookedSaviour.getVehicle());
             });
@@ -490,10 +495,14 @@ public class TripActivity extends AppCompatActivity implements OnMapReadyCallbac
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    Intent i = new Intent(TripActivity.this, BaseActivity.class);
+                    startActivity(i);
                     TripActivity.super.finish();
                 }
             });
         }else{
+            Intent i = new Intent(TripActivity.this, BaseActivity.class);
+            startActivity(i);
             super.finish();
         }
     }

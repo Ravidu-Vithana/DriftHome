@@ -6,24 +6,16 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 
 public class DrinkerConfig {
-    private boolean additional_charges;
     private boolean shake_to_book;
     private boolean auto_close;
     private boolean voice_notifications;
     private boolean always_home;
+    private int home_range;
     private String created_at;
     private String updated_at;
 
     public DrinkerConfig(){
 
-    }
-
-    public boolean isAdditional_charges() {
-        return additional_charges;
-    }
-
-    public void setAdditional_charges(boolean additional_charges) {
-        this.additional_charges = additional_charges;
     }
 
     public boolean isShake_to_book() {
@@ -58,6 +50,14 @@ public class DrinkerConfig {
         this.always_home = always_home;
     }
 
+    public int getHome_range() {
+        return home_range;
+    }
+
+    public void setHome_range(int home_range) {
+        this.home_range = home_range;
+    }
+
     public String getCreated_at() {
         return created_at;
     }
@@ -71,16 +71,6 @@ public class DrinkerConfig {
     }
 
     public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
-    }
-
-    public void updateFields(boolean additional_charges, boolean shake_to_book, boolean auto_close,
-                             boolean voice_notifications, boolean always_home, String updated_at) {
-        this.additional_charges = additional_charges;
-        this.shake_to_book = shake_to_book;
-        this.auto_close = auto_close;
-        this.voice_notifications = voice_notifications;
-        this.always_home = always_home;
         this.updated_at = updated_at;
     }
     public static DrinkerConfig getSPDrinkerConfig(Context context){

@@ -16,7 +16,7 @@ public class Trip {
     private GeoPoint drop;
     private GeoPoint current_saviour_location;
     private int state;
-    private Map<String, Object> feedback;
+    private Map<String, Object> feedback_of_drinker;
     private String created_at;
     private String updated_at;
     public Trip(){
@@ -80,12 +80,12 @@ public class Trip {
         this.state = state;
     }
 
-    public Map<String, Object> getFeedback() {
-        return feedback;
+    public Map<String, Object> getFeedback_of_drinker() {
+        return feedback_of_drinker;
     }
 
-    public void setFeedback(Map<String, Object> feedback) {
-        this.feedback = feedback;
+    public void setFeedback_of_drinker(Map<String, Object> feedback_of_drinker) {
+        this.feedback_of_drinker = feedback_of_drinker;
     }
 
     public String getCreated_at() {

@@ -15,6 +15,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,31 +70,47 @@ public class SplashActivity extends AppCompatActivity {
                             if (documentSnapshot.exists()) {
 
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
-                                drinker.updateSPDrinker(SplashActivity.this, drinker);
+                                if(isBlocked(drinker)){
+                                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                            .requestIdToken(getString(R.string.web_server_client_id))
+                                            .requestEmail()
+                                            .build();
 
-                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        String token = task.getResult();
-                                        FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
-                                                .update("fcmToken", token);
-                                        fcmToken = token;
-                                        Log.d(TAG, "checkCurrentUser: fcm token "+ fcmToken );
-                                    }
-                                });
+                                    GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(SplashActivity.this, gso);
+                                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                    mAuth.signOut();
+                                    mGoogleSignInClient.signOut();
+                                    Log.i(TAG, "onClick: Logout, user logged out------------------------");
 
-                                db.collection("drinkerConfig")
-                                        .document(user.getEmail())
-                                        .get()
-                                        .addOnSuccessListener(documentSnapshot2 -> {
-                                            if (documentSnapshot2.exists()) {
-                                                DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
-                                                drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
-                                                runOnUiThread(this::navigateToHome);
-                                            } else {
-                                                runOnUiThread(this::showErrorAndLogin);
-                                            }
-                                        })
-                                        .addOnFailureListener(e -> runOnUiThread(this::showErrorAndLogin));
+                                    drinker.removeSPDrinker(SplashActivity.this);
+                                    runOnUiThread(this::navigateToLogin);
+                                }else{
+                                    drinker.updateSPDrinker(SplashActivity.this, drinker);
+
+                                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            String token = task.getResult();
+                                            FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
+                                                    .update("fcmToken", token);
+                                            fcmToken = token;
+                                            Log.d(TAG, "checkCurrentUser: fcm token "+ fcmToken );
+                                        }
+                                    });
+
+                                    db.collection("drinkerConfig")
+                                            .document(user.getEmail())
+                                            .get()
+                                            .addOnSuccessListener(documentSnapshot2 -> {
+                                                if (documentSnapshot2.exists()) {
+                                                    DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+                                                    drinkerConfig.updateSPDrinkerConfig(SplashActivity.this, drinkerConfig);
+                                                    runOnUiThread(this::navigateToHome);
+                                                } else {
+                                                    runOnUiThread(this::showErrorAndLogin);
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> runOnUiThread(this::showErrorAndLogin));
+                                }
                             } else {
                                 runOnUiThread(this::showErrorAndLogin);
                             }
@@ -101,6 +120,10 @@ public class SplashActivity extends AppCompatActivity {
                 runOnUiThread(this::navigateToLogin);
             }
         }).start();
+    }
+
+    public static boolean isBlocked(Drinker drinker){
+        return drinker != null && drinker.isBlocked();
     }
 
     private void navigateToHome() {

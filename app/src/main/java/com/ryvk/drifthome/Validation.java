@@ -2,6 +2,7 @@ package com.ryvk.drifthome;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Validation {
     public static boolean isEmailValid(String email) {
@@ -24,11 +25,15 @@ public class Validation {
         return mobile.matches("^07[012345678]{1}[0-9]{7}$");
     }
     public static String todayDate() {
-        return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Colombo"));
+        return sdf.format(new Date());
     }
 
     public static String todayDateTime() {
-        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Colombo"));
+        return sdf.format(new Date());
     }
 
     public static String year() {

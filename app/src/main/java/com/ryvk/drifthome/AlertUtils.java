@@ -35,4 +35,17 @@ public class AlertUtils {
         }
         return null;
     }
+    public static void showAlertWithAction(Context context, String title, String message, String actionText,
+                                           Runnable action) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(actionText, (dialog, which) -> {
+                    if (action != null) {
+                        action.run();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
 }

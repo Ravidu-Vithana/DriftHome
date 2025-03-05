@@ -140,6 +140,7 @@ public class GoogleAuthentication extends AppCompatActivity {
             drinker.put("mobile", loggedUser.getPhoneNumber());
             drinker.put("tokens", 0);
             drinker.put("trip_count", 0);
+            drinker.put("blocked", false);
             drinker.put("created_at", Validation.todayDateTime());
             drinker.put("updated_at", Validation.todayDateTime());
 
@@ -152,11 +153,11 @@ public class GoogleAuthentication extends AppCompatActivity {
 
                             Log.i(TAG, "store details: success");
                             HashMap<String, Object> drinkerConfig = new HashMap<>();
-                            drinkerConfig.put("additional_charges", false);
+                            drinkerConfig.put("always_home", false);
                             drinkerConfig.put("shake_to_book", false);
                             drinkerConfig.put("auto_close", false);
                             drinkerConfig.put("voice_notifications", false);
-                            drinkerConfig.put("always_home", false);
+                            drinkerConfig.put("home_range", 0);
                             drinkerConfig.put("created_at", Validation.todayDateTime());
                             drinkerConfig.put("updated_at", Validation.todayDateTime());
 

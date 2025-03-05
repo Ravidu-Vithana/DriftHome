@@ -123,7 +123,6 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent = new Intent();
@@ -221,6 +220,7 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
             drinker.put("mobile", mobile);
             drinker.put("tokens", 0);
             drinker.put("trip_count", 0);
+            drinker.put("blocked", false);
             drinker.put("created_at", Validation.todayDateTime());
             drinker.put("updated_at", Validation.todayDateTime());
 
@@ -233,11 +233,11 @@ public class EmailPasswordAuthentication extends AppCompatActivity {
                             Log.i(TAG, "store details: success");
 
                             HashMap<String, Object> drinkerConfig = new HashMap<>();
-                            drinkerConfig.put("additional_charges", false);
+                            drinkerConfig.put("always_home", false);
                             drinkerConfig.put("shake_to_book", false);
                             drinkerConfig.put("auto_close", false);
                             drinkerConfig.put("voice_notifications", false);
-                            drinkerConfig.put("always_home", false);
+                            drinkerConfig.put("home_range", 0);
                             drinkerConfig.put("created_at", Validation.todayDateTime());
                             drinkerConfig.put("updated_at", Validation.todayDateTime());
 

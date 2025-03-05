@@ -19,8 +19,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -29,7 +31,7 @@ public class HistoryActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ConstraintLayout noHistoryContainer;
     private Drinker loggedDrinker;
-    private List<HistoryCard> tripList;
+    private final List<HistoryCard> tripList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,43 +58,68 @@ public class HistoryActivity extends AppCompatActivity {
 
     }
 
-    private void loadTripHistory(){
+    public void loadTripHistory(){
+        tripList.clear();
+        progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "loadTripHistory: started");
         new Thread(()->{
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             db.collection("trip")
                     .whereEqualTo("drinker_email", loggedDrinker.getEmail())
+                    .orderBy("created_at", Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                                 Trip trip = document.toObject(Trip.class);
 
-                                db.collection("saviour")
-                                        .document(trip.getSaviour_email())
-                                        .get()
-                                        .addOnSuccessListener(documentSnapshot -> {
-                                            if (documentSnapshot.exists()) {
-                                                Saviour saviour = documentSnapshot.toObject(Saviour.class);
-                                                HistoryCard historyCard = new HistoryCard(document.getId(),trip.getCreated_at(), saviour.getName(), saviour.getVehicle());
-                                                tripList.add(historyCard);
-                                            } else {
-                                                Log.d("Saviour data", "No saviour found.");
-                                            }
-                                        })
-                                        .addOnFailureListener(e -> Log.e("Saviour data", "No saviour found.",e));
+                                if (trip.getSaviour_email() != null) {
+                                    db.collection("saviour")
+                                            .document(trip.getSaviour_email())
+                                            .get()
+                                            .addOnSuccessListener(documentSnapshot -> {
+                                                if (documentSnapshot.exists()) {
+                                                    Saviour saviour = documentSnapshot.toObject(Saviour.class);
+
+                                                    if(saviour != null){
+                                                        boolean feedbackGiven = trip.getFeedback_of_drinker() != null && !trip.getFeedback_of_drinker().isEmpty();
+
+                                                        HistoryCard historyCard = new HistoryCard(document.getId(), trip.getCreated_at(), saviour.getProfile_pic(), saviour.getName(), saviour.getVehicle(), feedbackGiven);
+                                                        tripList.add(historyCard);
+                                                        updateUI();
+                                                    }
+
+                                                } else {
+                                                    Log.d("Saviour data", "No saviour found.");
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> Log.e("Saviour data", "No saviour found.", e));
+                                } else {
+                                    Log.d(TAG, "loadTripHistory: savior email is null");
+                                }
                             }
-                            HistoryAdapter adapter = new HistoryAdapter(tripList, HistoryActivity.this);
-                            recyclerView.setAdapter(adapter);
-                        } else {
-                            noHistoryContainer.setVisibility(View.VISIBLE);
+                        }else{
+                            updateUI();
                         }
-                        progressBar.setVisibility(View.GONE);
                     })
-                    .addOnFailureListener(e -> {
-                        Log.e("TripData", "Error getting trips: ", e);
-                    });
+                    .addOnFailureListener(e -> Log.e("TripData", "Error getting trips: ", e));
         }).start();
+    }
+    private void updateUI(){
+        if(tripList.isEmpty()){
+            noHistoryContainer.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }else{
+            HistoryAdapter adapter = new HistoryAdapter(tripList, HistoryActivity.this, new HistoryAdapter.OnFeedbackSubmittedListener() {
+                @Override
+                public void onFeedbackSubmitted() {
+                    loadTripHistory();
+                }
+            });
+            recyclerView.setAdapter(adapter);
+            recyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

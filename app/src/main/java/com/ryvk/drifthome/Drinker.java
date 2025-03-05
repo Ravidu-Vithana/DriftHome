@@ -39,11 +39,15 @@ public class Drinker {
     @Expose
     private String gender;
     @Expose
+    private String profile_pic;
+    @Expose
     private int tokens;
     @Expose
     private int trip_count;
     @Expose
     private List<GeoPoint> addresses = new ArrayList<>();
+    @Expose
+    private boolean blocked;
     @Expose
     private String created_at;
     @Expose
@@ -93,6 +97,14 @@ public class Drinker {
         this.gender = gender;
     }
 
+    public String getProfile_pic() {
+        return profile_pic;
+    }
+
+    public void setProfile_pic(String profile_pic) {
+        this.profile_pic = profile_pic;
+    }
+
     public int getTokens() {
         return tokens;
     }
@@ -115,6 +127,14 @@ public class Drinker {
 
     public void setAddresses(List<GeoPoint> addresses) {
         this.addresses = addresses;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     public String getCreated_at() {
@@ -226,7 +246,6 @@ public class Drinker {
             }
         }).start();
     }
-
     private String getAddressFromGeoPoint(GeoPoint geoPoint, Context context) {
 
         OkHttpClient client = new OkHttpClient();

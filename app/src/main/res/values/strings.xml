@@ -59,19 +59,26 @@
     <string name="d_homeFragment_text1_completeProfile">Please complete your profile to activate the service.</string>
 
     <string name="d_settingsFragment_text1">Settings</string>
+    <string name="d_settingsFragment_text2">Range</string>
+    <string name="d_settingsFragment_text3">Km</string>
+    <string name="d_settingsFragment_text4">Enter the Top Up amount</string>
+    <string name="d_settingsFragment_edittext1">ex: 40</string>
+    <string name="d_settingsFragment_edittext2">ex: 2000</string>
     <string name="d_settingsFragment_btn1">My Credit Card</string>
     <string name="d_settingsFragment_btn2">Logout</string>
     <string name="d_settingsFragment_btn3">Delete my account</string>
-    <string name="d_settingsFragment_setting1">Inquire Additional Charges</string>
-    <string name="d_settingsFragment_setting1_body">If this setting is “on”, system will automatically inquire additional trip charges from the card. This will also allow to go to destinations beyond the maximum top-up charge.</string>
+    <string name="d_settingsFragment_btn4">Top Up my account</string>
+    <string name="d_settingsFragment_btn5">Edit</string>
+    <string name="d_settingsFragment_btn6">Set Range</string>
+    <string name="d_settingsFragment_btn7">Proceed</string>
+    <string name="d_settingsFragment_setting1">Always Home if in range</string>
+    <string name="d_settingsFragment_setting1_body">If this setting is “on”, the drop location will default to home, if home is within specified range. If not, it will default to the nearest address. Credit card is needed.</string>
     <string name="d_settingsFragment_setting2">Shake to Book Ride</string>
     <string name="d_settingsFragment_setting2_body">If this setting is “on”, a ride can be booked from Home menu just by shaking the phone. (Note: only for supported devices)</string>
     <string name="d_settingsFragment_setting3">Auto close the App</string>
     <string name="d_settingsFragment_setting3_body">If this setting is “on”, the application will automatically close with a timeout after the trip has ended.</string>
     <string name="d_settingsFragment_setting4">Voice Notifications</string>
     <string name="d_settingsFragment_setting4_body">If this setting is “on”, the application will send out voice notifications regarding the ride status.</string>
-    <string name="d_settingsFragment_setting5">Always Home if in range</string>
-    <string name="d_settingsFragment_setting5_body">If this setting is “on”, the drop location will default to home if home is within range. If not, it will default to the nearest address.</string>
 
     <string name="d_profileFragment_text1">Profile</string>
     <string name="d_profileFragment_text2">My Addresses</string>
@@ -114,6 +121,11 @@
     <string name="d_historyCardFragment_text3">Vehicle:</string>
     <string name="d_historyCardFragment_text_placeholder">_________________________</string>
     <string name="d_historyCardFragment_btn">Give Feedback</string>
+    <string name="d_historyCardFragment_btn_given">Feedback Given</string>
+
+    <string name="d_feedbackBottomSheet_text1">Rate The Saviour</string>
+    <string name="d_feedbackBottomSheet_text2">Enter your feedback</string>
+    <string name="d_feedbackBottomSheet_btn1">Submit</string>
 
     <string name="d_tripFareFragment_text1">Total Fare</string>
     <string name="d_tripFareFragment_text2">Balance:</string>
@@ -122,7 +134,7 @@
 
     <string name="d_addressList_text1">Address List</string>
     <string name="d_addressList_btn1">+ Add address</string>
-    <string name="d_addressList_text2">*** Choose drop locations that are wide apart to ensure maximum area coverage to minimize costs. ***</string>
+    <string name="d_addressList_text2">***Choose drop locations that are wide apart to ensure maximum area coverage to minimize costs***</string>
     <string name="d_addressList_text3">No Locations Added</string>
 
     <string name="d_addressCard_text1">2, Havelock Road, Colombo 03, Colombo</string>
@@ -132,4 +144,6 @@
     <string name="title_home">Home</string>
     <string name="title_profile">Profile</string>
     <string name="title_settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

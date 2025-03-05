@@ -5,20 +5,29 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -130,7 +139,16 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                requestRideCancellation();
+                AlertUtils.showConfirmDialog(BookingActivity.this, "Cancel Ride", "Are you sure you want to cancel this ride?", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(isRideAccepted){
+                            requestRideCancellation();
+                        }else{
+                            endRideRequest();
+                        }
+                    }
+                });
             }
         };
 
@@ -180,6 +198,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             mediaPlayer = MediaPlayer.create(this, R.raw.booking_ride_wait);
             mediaPlayer.start();
         }
+
     }
 
     private void checkLocationPermission() {
@@ -248,13 +267,15 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
     }
     private void startBooking(){
 
+        Log.d(TAG, "startBooking: started calling");
+
         DrinkerConfig loggedDrinkerConfig = DrinkerConfig.getSPDrinkerConfig(BookingActivity.this);
 
         String apiKey = loggedDrinker.getApiKey(BookingActivity.this);
         if(loggedDrinkerConfig.isAlways_home()){
 
             int distance = Utils.getRoadDistance(apiKey,userLocation,loggedDrinker.getHomeAddress());
-            int distanceThreshold = R.integer.distance_threshold_meters;
+            int distanceThreshold = loggedDrinkerConfig.getHome_range() * 1000;
 
             if(distance <= distanceThreshold){
                 dropLocation = loggedDrinker.getHomeAddress();
@@ -281,8 +302,14 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                                     .registerTypeAdapter(GeoPoint.class, new GeoPointAdapter())
                                     .create();
                             try {
+                                String profilePicUrl = "";
+                                if(loggedDrinker.getProfile_pic() != null){
+                                    profilePicUrl = loggedDrinker.getProfile_pic();
+                                }
+
                                 json.addProperty("rideId", documentReference.getId());
                                 json.addProperty("customerName", loggedDrinker.getName());
+                                json.addProperty("profilePicUrl", profilePicUrl);
                                 json.addProperty("fcmToken", SplashActivity.fcmToken);
                                 JsonObject locationJson = gson.toJsonTree(userLocation).getAsJsonObject();
                                 json.add("location", locationJson);
@@ -376,8 +403,10 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         Button bookBtn = findViewById(R.id.button10);
         Button cancelBtn = findViewById(R.id.button11);
         TextView infoText = findViewById(R.id.textView14);
+        ImageView saviourProfileImageView = findViewById(R.id.imageView2);
         TextView saviourNameText = findViewById(R.id.textView17);
         TextView saviourVehicleText = findViewById(R.id.textView18);
+        ImageButton callButton = findViewById(R.id.imageButton4);
         ProgressBar progressBar = findViewById(R.id.progressBar4);
         ProgressBar timerBar = findViewById(R.id.searchRideProgressBar);
         FragmentContainerView driverCardView = findViewById(R.id.fragmentContainerView2);
@@ -399,7 +428,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 infoText.setVisibility(View.VISIBLE);
                 cancelBtn.setVisibility(View.GONE);
                 bookBtn.setText("");
-                bookBtn.setTextSize(60f);
+                bookBtn.setTextSize(55f);
             }
         });
 
@@ -407,17 +436,21 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
             @Override
             public void run() {
                 for (int x = 3; x >= 0; x--){
-                    int finalX = x;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            bookBtn.setText(String.valueOf(finalX));
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }else{
+                        int finalX = x;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                bookBtn.setText(String.valueOf(finalX));
+                            }
+                        });
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
-                    });
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     }
                 }
 
@@ -463,8 +496,23 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        if(BookingActivity.bookedSaviour.getProfile_pic() != null && !BookingActivity.bookedSaviour.getProfile_pic().isBlank()){
+                                            Utils.loadImageUrlToView(BookingActivity.this,saviourProfileImageView,BookingActivity.bookedSaviour.getProfile_pic());
+                                        }
                                         saviourNameText.setText(bookedSaviour.getName());
                                         saviourVehicleText.setText(bookedSaviour.getVehicle());
+                                        callButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                String phoneNumber = BookingActivity.bookedSaviour.getMobile();
+
+                                                if(!phoneNumber.isEmpty() && !phoneNumber.isBlank()){
+                                                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                                                    intent.setData(Uri.parse(phoneNumber));
+                                                    BookingActivity.this.startActivity(intent);
+                                                }
+                                            }
+                                        });
                                         driverCardView.setVisibility(View.VISIBLE);
                                         bookBtn.setClickable(true);
                                     }
@@ -515,6 +563,7 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         cancelButtonThread = new Thread(new Runnable() {
             @Override
             public void run() {
+
                 try {
                     if(!cancelButtonThread.isInterrupted()){
                         Thread.sleep(5000);
@@ -844,6 +893,8 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
                 playCancelVoice();
             }
         }else{
+            Intent i = new Intent(BookingActivity.this, BaseActivity.class);
+            startActivity(i);
             finish();
         }
     }
@@ -855,6 +906,8 @@ public class BookingActivity extends AppCompatActivity implements OnMapReadyCall
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+                Intent i = new Intent(BookingActivity.this, BaseActivity.class);
+                startActivity(i);
                 finish();
             }
         });

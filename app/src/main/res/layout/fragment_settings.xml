@@ -25,7 +25,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/d_red1"
+                android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_btn3"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 app:cornerRadius="@dimen/d_button_corner_radius"
                 app:layout_constraintEnd_toEndOf="@+id/textView31"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -75,45 +79,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-            <TextView
-                android:id="@+id/textView27"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/lexend_deca"
-                android:text="@string/d_settingsFragment_setting1_body"
-                android:textColor="@color/d_gray3"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@+id/button14"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/switch1"
-                app:layout_constraintTop_toBottomOf="@+id/switch1" />
-
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/d_setting_switch_height"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/lexend_deca"
-                android:text="@string/d_settingsFragment_setting1"
-                android:textSize="16sp"
-                android:checked="false"
-                app:layout_constraintEnd_toEndOf="@+id/button14"
-                app:layout_constraintStart_toStartOf="@+id/button14"
-                app:layout_constraintTop_toBottomOf="@+id/button14" />
-
             <Switch
                 android:id="@+id/switch3"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/d_setting_switch_height"
                 android:layout_marginTop="16dp"
+                android:checked="false"
                 android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_setting2"
                 android:textSize="16sp"
-                android:checked="false"
-                app:layout_constraintEnd_toEndOf="@+id/textView27"
+                app:layout_constraintEnd_toEndOf="@+id/textView31"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/textView27"
-                app:layout_constraintTop_toBottomOf="@+id/textView27" />
+                app:layout_constraintStart_toStartOf="@+id/textView31"
+                app:layout_constraintTop_toBottomOf="@+id/textView31" />
 
             <TextView
                 android:id="@+id/textView28"
@@ -182,20 +160,20 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/d_setting_switch_height"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/lexend_deca"
-                android:text="@string/d_settingsFragment_setting5"
-                android:textSize="16sp"
                 android:checked="false"
-                app:layout_constraintEnd_toEndOf="@+id/textView30"
-                app:layout_constraintStart_toStartOf="@+id/textView30"
-                app:layout_constraintTop_toBottomOf="@+id/textView30" />
+                android:fontFamily="@font/lexend_deca"
+                android:text="@string/d_settingsFragment_setting1"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/button14"
+                app:layout_constraintStart_toStartOf="@+id/button14"
+                app:layout_constraintTop_toBottomOf="@+id/button14" />
 
             <TextView
                 android:id="@+id/textView31"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/lexend_deca"
-                android:text="@string/d_settingsFragment_setting5_body"
+                android:text="@string/d_settingsFragment_setting1_body"
                 android:textColor="@color/d_gray3"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/switch6"
@@ -206,13 +184,17 @@
                 android:id="@+id/button15"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:backgroundTint="@color/d_red1"
+                android:fontFamily="@font/lexend_deca"
                 android:text="@string/d_settingsFragment_btn2"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 app:cornerRadius="@dimen/d_button_corner_radius"
                 app:layout_constraintEnd_toEndOf="@+id/textView31"
                 app:layout_constraintStart_toStartOf="@+id/textView31"
-                app:layout_constraintTop_toBottomOf="@+id/textView31" />
+                app:layout_constraintTop_toBottomOf="@+id/button26" />
 
             <TextView
                 android:id="@+id/textView46"
@@ -223,6 +205,40 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button21" />
+
+            <Button
+                android:id="@+id/button26"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/d_orange"
+                android:fontFamily="@font/lexend_deca"
+                android:text="@string/d_settingsFragment_btn4"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/d_button_corner_radius"
+                app:layout_constraintEnd_toEndOf="@+id/textView30"
+                app:layout_constraintStart_toStartOf="@+id/textView30"
+                app:layout_constraintTop_toBottomOf="@+id/textView30" />
+
+            <Button
+                android:id="@+id/button27"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="60dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="60dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/lexend_deca"
+                android:text="@string/d_settingsFragment_btn5"
+                android:textColor="@color/d_blue"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                android:enabled="false"
+                app:layout_constraintBottom_toBottomOf="@+id/switch6"
+                app:layout_constraintEnd_toEndOf="@+id/switch6"
+                app:layout_constraintTop_toTopOf="@+id/switch6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

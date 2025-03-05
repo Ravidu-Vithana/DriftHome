@@ -69,6 +69,9 @@ dependencies {
     //Add the dependancy for the Firebase Cloud Messaging
     implementation("com.google.firebase:firebase-messaging")
 
+    //Add the dependancy for the Firebase Storage
+    implementation("com.google.firebase:firebase-storage")
+
     // Add OKHttp client
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
@@ -77,5 +80,12 @@ dependencies {
 
     //add glide for GIF manipulation
     implementation ("com.github.bumptech.glide:glide:4.15.1")
+
+    //add library for uploading cropped profile images
+    implementation("com.github.yalantis:ucrop:2.2.6")
+
+    //add PayHere SDK
+    implementation ("com.github.PayHereDevs:payhere-android-sdk:v3.0.17")
+    implementation ("androidx.appcompat:appcompat:1.6.0")
 
 }

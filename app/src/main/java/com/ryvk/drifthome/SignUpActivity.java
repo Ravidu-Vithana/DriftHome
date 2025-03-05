@@ -43,6 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         googleSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.hideKeyboard(SignUpActivity.this);
                 Intent i = new Intent(SignUpActivity.this,GoogleAuthentication.class);
                 startActivityForResult(i,RC_EPSIGNUP);
             }
@@ -52,7 +53,7 @@ public class SignUpActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Utils.hideKeyboard(SignUpActivity.this);
                 EditText nameEditText = findViewById(R.id.editTextText3);
                 EditText emailEditText = findViewById(R.id.editTextText4);
                 EditText mobileEditText = findViewById(R.id.editTextText5);
@@ -82,6 +83,7 @@ public class SignUpActivity extends AppCompatActivity {
         goToSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Utils.hideKeyboard(SignUpActivity.this);
                 Intent i = new Intent(SignUpActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();

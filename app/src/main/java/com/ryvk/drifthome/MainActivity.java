@@ -17,6 +17,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Utils.hideKeyboard(MainActivity.this);
                         Intent i = new Intent(MainActivity.this, EmailPasswordAuthentication.class);
                         i.putExtra("email",email);
                         i.putExtra("password",password);
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Utils.hideKeyboard(MainActivity.this);
                         Intent i = new Intent(MainActivity.this, SignUpActivity.class);
                         startActivity(i);
                         finish();
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Utils.hideKeyboard(MainActivity.this);
                         Intent i = new Intent(MainActivity.this,GoogleAuthentication.class);
                         startActivityForResult(i,RC_EPSIGNIN);
                     }
@@ -132,44 +138,60 @@ public class MainActivity extends AppCompatActivity {
 
                                 Drinker drinker = documentSnapshot.toObject(Drinker.class);
 
-                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        String token = task.getResult();
-                                        FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
-                                                .update("fcmToken", token);
-                                        SplashActivity.fcmToken = token;
-                                    }
-                                });
+                                if(SplashActivity.isBlocked(drinker)){
+                                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                            .requestIdToken(getString(R.string.web_server_client_id))
+                                            .requestEmail()
+                                            .build();
 
-                                //update shared preferences
-                                drinker.updateSPDrinker(MainActivity.this,drinker);
+                                    GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(MainActivity.this, gso);
+                                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                    mAuth.signOut();
+                                    mGoogleSignInClient.signOut();
+                                    Log.i(TAG, "onClick: Logout, user logged out------------------------");
 
-                                db.collection("drinkerConfig")
-                                        .document(user.getEmail())
-                                        .get()
-                                        .addOnSuccessListener(documentSnapshot2 -> {
-                                            if (documentSnapshot2.exists()) {
-                                                DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+                                    drinker.removeSPDrinker(MainActivity.this);
 
-                                                //update shared preferences
-                                                drinkerConfig.updateSPDrinkerConfig(MainActivity.this,drinkerConfig);
+                                    AlertUtils.showAlert(MainActivity.this,"Blocked!","You have been blocked by the admin!");
+                                }else{
+                                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            String token = task.getResult();
+                                            FirebaseFirestore.getInstance().collection("drinker").document(user.getEmail())
+                                                    .update("fcmToken", token);
+                                            SplashActivity.fcmToken = token;
+                                        }
+                                    });
 
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Intent i = new Intent(MainActivity.this, BaseActivity.class);
-                                                        startActivity(i);
-                                                        finish();
-                                                    }
-                                                });
-                                            } else {
-                                                runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
-                                            }
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.d(TAG, "onSuccess: Login Error : Data retrieval failed! Please restart the application.");
-                                        });
+                                    //update shared preferences
+                                    drinker.updateSPDrinker(MainActivity.this,drinker);
 
+                                    db.collection("drinkerConfig")
+                                            .document(user.getEmail())
+                                            .get()
+                                            .addOnSuccessListener(documentSnapshot2 -> {
+                                                if (documentSnapshot2.exists()) {
+                                                    DrinkerConfig drinkerConfig = documentSnapshot2.toObject(DrinkerConfig.class);
+
+                                                    //update shared preferences
+                                                    drinkerConfig.updateSPDrinkerConfig(MainActivity.this,drinkerConfig);
+
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Intent i = new Intent(MainActivity.this, BaseActivity.class);
+                                                            startActivity(i);
+                                                            finish();
+                                                        }
+                                                    });
+                                                } else {
+                                                    runOnUiThread(()->AlertUtils.showAlert(getApplicationContext(),"Login Error","Data retrieval failed! Please restart the application."));
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.d(TAG, "onSuccess: Login Error : Data retrieval failed! Please restart the application.");
+                                            });
+                                }
                             } else {
                                 Log.d(TAG, "onSuccess: Login Error : Data retrieval failed! Please restart the application.");
                             }
